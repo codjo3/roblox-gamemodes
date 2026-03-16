@@ -104,4 +104,4 @@ unmount()
 | `useRef` | Persistent mutable ref that does not trigger re-renders |
 | `useEffect` | Side effect with optional cleanup, re-runs when deps change |
 
-See the [API reference](../api/GamemodeCore) for full signatures.
+See the [API reference](/api/GamemodeCore) for full signatures.
