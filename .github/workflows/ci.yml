@@ -1,0 +1,115 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  # ── Job 1: Detect which modules changed ─────────────────────
+  detect:
+    name: Detect changed modules
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.detect.outputs.matrix }}
+      has_modules: ${{ steps.detect.outputs.has_modules }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Detect changed modules
+        id: detect
+        shell: bash
+        run: |
+          CHANGED=()
+          for dir in modules/*/; do
+            MODULE=$(basename "$dir")
+            if git diff --name-only HEAD~1 HEAD | grep -q "^modules/$MODULE/"; then
+              CHANGED+=("$MODULE")
+            fi
+          done
+
+          if [ ${#CHANGED[@]} -eq 0 ]; then
+            echo "No modules changed."
+            echo "has_modules=false" >> $GITHUB_OUTPUT
+            echo "matrix={\"module\":[]}" >> $GITHUB_OUTPUT
+          else
+            JSON=$(printf '%s\n' "${CHANGED[@]}" | jq -R . | jq -sc '{module: .}')
+            echo "Changed modules: $JSON"
+            echo "has_modules=true" >> $GITHUB_OUTPUT
+            echo "matrix=$JSON" >> $GITHUB_OUTPUT
+          fi
+
+  # ── Job 2: Test all changed modules ─────────────────────────
+  test:
+    name: Test ${{ matrix.module }}
+    needs: detect
+    if: needs.detect.outputs.has_modules == 'true'
+    runs-on: windows-latest  # run-in-roblox requires Windows
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.detect.outputs.matrix) }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: Roblox/setup-foreman@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Run tests
+        shell: bash
+        run: scripts/test.sh ${{ matrix.module }}
+
+  # ── Job 3: Publish modules whose version was bumped ─────────
+  publish:
+    name: Publish ${{ matrix.module }}
+    needs: [detect, test]
+    if: |
+      github.event_name == 'push' &&
+      needs.detect.outputs.has_modules == 'true'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.detect.outputs.matrix) }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - uses: Roblox/setup-foreman@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Check if version was bumped
+        id: version_check
+        shell: bash
+        run: |
+          MODULE=${{ matrix.module }}
+          TOML="modules/$MODULE/wally.toml"
+
+          CURRENT=$(grep '^version' "$TOML" | head -1 | sed 's/version = "\(.*\)"/\1/')
+          PREVIOUS=$(git show HEAD~1:"$TOML" 2>/dev/null | grep '^version' | head -1 | sed 's/version = "\(.*\)"/\1/' || echo "none")
+
+          echo "Current version:  $CURRENT"
+          echo "Previous version: $PREVIOUS"
+
+          if [ "$CURRENT" != "$PREVIOUS" ]; then
+            echo "Version bumped — will publish."
+            echo "should_publish=true" >> $GITHUB_OUTPUT
+          else
+            echo "Version unchanged — skipping publish."
+            echo "should_publish=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Publish to Wally
+        if: steps.version_check.outputs.should_publish == 'true'
+        shell: bash
+        env:
+          WALLY_AUTH_TOKEN: ${{ secrets.WALLY_AUTH_TOKEN }}
+        run: |
+          wally login --token "$WALLY_AUTH_TOKEN"
+          scripts/publish.sh ${{ matrix.module }}

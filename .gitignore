@@ -1,0 +1,24 @@
+# Wally
+Packages/
+DevPackages/
+wally.lock
+
+# Rojo
+*.rbxl
+*.rbxlx
+*sourcemap.json
+
+# Build output
+build/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.suo
+
+# Foreman
+.foreman/

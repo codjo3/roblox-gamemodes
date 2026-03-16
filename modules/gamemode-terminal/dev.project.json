@@ -1,0 +1,21 @@
+{
+  "name": "gamemode-terminal-dev",
+  "tree": {
+    "$className": "DataModel",
+    "ReplicatedStorage": {
+      "$className": "ReplicatedStorage",
+      "Packages": {
+        "$path": "Packages",
+        "GamemodeTerminal": {
+          "$path": "src",
+          "tests": {
+            "$path": "tests"
+          }
+        }
+      },
+      "DevPackages": {
+        "$path": "DevPackages"
+      }
+    }
+  }
+}

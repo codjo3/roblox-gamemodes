@@ -1,0 +1,17 @@
+[package]
+name = "codjo3/gamemode-core"
+description = "Reactive hook-based gamemode lifecycle core for Roblox"
+version = "0.1.1"
+registry = "https://github.com/UpliftGames/wally-index"
+realm = "shared"
+license = "MIT"
+authors = ["JaydonsFault"]
+include = ["default.project.json", "wally.toml", "src", "src/**/*.luau"]
+exclude = ["**"]
+
+[dependencies]
+# No external runtime dependencies
+
+[dev-dependencies]
+Jest = "jsdotlua/jest@3.10.0"
+JestGlobals = "jsdotlua/jest-globals@3.10.0"

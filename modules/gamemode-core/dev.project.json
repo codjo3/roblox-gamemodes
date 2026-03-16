@@ -1,0 +1,21 @@
+{
+  "name": "gamemode-core-dev",
+  "tree": {
+    "$className": "DataModel",
+    "ReplicatedStorage": {
+      "$className": "ReplicatedStorage",
+      "Packages": {
+        "$className": "Folder",
+        "GamemodeCore": {
+          "$path": "src",
+          "tests": {
+            "$path": "tests"
+          }
+        }
+      },
+      "DevPackages": {
+        "$path": "DevPackages"
+      }
+    }
+  }
+}

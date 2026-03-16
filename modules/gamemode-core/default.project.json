@@ -1,0 +1,6 @@
+{
+  "name": "gamemode-core",
+  "tree": {
+    "$path": "src"
+  }
+}

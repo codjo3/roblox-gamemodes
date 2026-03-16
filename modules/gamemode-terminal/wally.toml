@@ -1,0 +1,17 @@
+[package]
+name = "codjo3/gamemode-terminal"
+description = "Terminal (control-point) gamemode built on gamemode-core"
+version = "0.1.1"
+registry = "https://github.com/UpliftGames/wally-index"
+realm = "shared"
+license = "MIT"
+authors = ["JaydonsFault"]
+include = ["default.project.json", "wally.toml", "src", "src/**/*.luau"]
+exclude = ["**"]
+
+[dependencies]
+GamemodeCore = "codjo3/gamemode-core@0.1.1"
+QuickZone = "ldgerrits/quickzone@1.2.0"
+
+[dev-dependencies]
+JestGlobals = "jsdotlua/jest-globals@3.10.0"

@@ -1,0 +1,7 @@
+{
+  "aliases": {
+    "dev": "DevPackages",
+    "pkg": "Packages",
+    "src": "src"
+  }
+}
