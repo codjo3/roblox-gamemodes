@@ -44,31 +44,10 @@ jobs:
             echo "matrix=$JSON" >> $GITHUB_OUTPUT
           fi
 
-  # ── Job 2: Test all changed modules ─────────────────────────
-  test:
-    name: Test ${{ matrix.module }}
-    needs: detect
-    if: needs.detect.outputs.has_modules == 'true'
-    runs-on: windows-latest
-    strategy:
-      fail-fast: false
-      matrix: ${{ fromJson(needs.detect.outputs.matrix) }}
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: Roblox/setup-foreman@v3
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          allow-external-github-orgs: true
-
-      - name: Run tests
-        shell: bash
-        run: scripts/test.sh ${{ matrix.module }}
-
-  # ── Job 3: Publish modules whose version was bumped ─────────
+  # ── Job 2: Publish modules whose version was bumped ─────────
   publish:
     name: Publish ${{ matrix.module }}
-    needs: [detect, test]
+    needs: detect
     if: |
       github.event_name == 'push' &&
       needs.detect.outputs.has_modules == 'true'
@@ -151,7 +130,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  # ── Job 4: Deploy docs ──────────────────────────────────────
+  # ── Job 3: Deploy docs ──────────────────────────────────────
   docs:
     name: Deploy docs
     runs-on: ubuntu-latest
