@@ -1,0 +1,478 @@
+<!doctype html>
+<html lang="en" dir="ltr" class="plugin-moonwave plugin-id-moonwave" data-has-hydrated="false">
+<head>
+<meta charset="UTF-8">
+<meta name="generator" content="Docusaurus v3.7.0">
+<title data-rh="true">Terminal | roblox-gamemodes</title><meta data-rh="true" name="viewport" content="width=device-width,initial-scale=1"><meta data-rh="true" name="twitter:card" content="summary_large_image"><meta data-rh="true" property="og:url" content="https://codjo3.github.io/roblox-gamemodes/api/Terminal"><meta data-rh="true" property="og:locale" content="en"><meta data-rh="true" name="docusaurus_locale" content="en"><meta data-rh="true" name="docusaurus_tag" content="default"><meta data-rh="true" name="docsearch:language" content="en"><meta data-rh="true" name="docsearch:docusaurus_tag" content="default"><meta data-rh="true" property="og:title" content="Terminal | roblox-gamemodes"><meta data-rh="true" name="description" content="A terminal (control-point capture) gamemode built on `GamemodeCore`.
+
+Teams compete to hold a `BasePart` zone long enough to accumulate
+points. The first team to reach `PointsNeeded` wins. Supports
+overtime, stacking capture speed, defender win conditions, and
+React-style hooks via the inherited `mount` API.
+
+```lua
+local Terminal = require(Packages.GamemodeTerminal)
+
+local gm = Terminal.new(&quot;RoundOne&quot;, {
+    Teams = { game.Teams.Red, game.Teams.Blue },
+    Parts = { workspace.ControlPoint },
+    PointsNeeded = 1200,
+    CaptureTime = 10,
+})
+
+gm.Stopped:Connect(function(winner)
+    print(winner.Name .. &quot; wins!&quot;)
+end)
+
+gm:Start()
+```"><meta data-rh="true" property="og:description" content="A terminal (control-point capture) gamemode built on `GamemodeCore`.
+
+Teams compete to hold a `BasePart` zone long enough to accumulate
+points. The first team to reach `PointsNeeded` wins. Supports
+overtime, stacking capture speed, defender win conditions, and
+React-style hooks via the inherited `mount` API.
+
+```lua
+local Terminal = require(Packages.GamemodeTerminal)
+
+local gm = Terminal.new(&quot;RoundOne&quot;, {
+    Teams = { game.Teams.Red, game.Teams.Blue },
+    Parts = { workspace.ControlPoint },
+    PointsNeeded = 1200,
+    CaptureTime = 10,
+})
+
+gm.Stopped:Connect(function(winner)
+    print(winner.Name .. &quot; wins!&quot;)
+end)
+
+gm:Start()
+```"><link data-rh="true" rel="canonical" href="https://codjo3.github.io/roblox-gamemodes/api/Terminal"><link data-rh="true" rel="alternate" href="https://codjo3.github.io/roblox-gamemodes/api/Terminal" hreflang="en"><link data-rh="true" rel="alternate" href="https://codjo3.github.io/roblox-gamemodes/api/Terminal" hreflang="x-default"><link rel="stylesheet" href="/roblox-gamemodes/assets/css/styles.7a4bdbad.css">
+<script src="/roblox-gamemodes/assets/js/runtime~main.ad3275aa.js" defer="defer"></script>
+<script src="/roblox-gamemodes/assets/js/main.3084554d.js" defer="defer"></script>
+</head>
+<body class="navigation-with-keyboard">
+<script>!function(){function t(t){document.documentElement.setAttribute("data-theme",t)}var e=function(){try{return new URLSearchParams(window.location.search).get("docusaurus-theme")}catch(t){}}()||function(){try{return window.localStorage.getItem("theme")}catch(t){}}();null!==e?t(e):window.matchMedia("(prefers-color-scheme: dark)").matches?t("dark"):(window.matchMedia("(prefers-color-scheme: light)").matches,t("light"))}(),function(){try{const c=new URLSearchParams(window.location.search).entries();for(var[t,e]of c)if(t.startsWith("docusaurus-data-")){var a=t.replace("docusaurus-data-","data-");document.documentElement.setAttribute(a,e)}}catch(t){}}()</script><div id="__docusaurus"><div role="region" aria-label="Skip to main content"><a class="skipToContent_fXgn" href="#__docusaurus_skipToContent_fallback">Skip to main content</a></div><nav aria-label="Main" class="navbar navbar--fixed-top"><div class="navbar__inner"><div class="navbar__items"><button aria-label="Toggle navigation bar" aria-expanded="false" class="navbar__toggle clean-btn" type="button"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><path stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="2" d="M4 7h22M4 15h22M4 23h22"></path></svg></button><a class="navbar__brand" href="/roblox-gamemodes/"><b class="navbar__title text--truncate">roblox-gamemodes</b></a><a class="navbar__item navbar__link" href="/roblox-gamemodes/docs/intro">Docs</a><a aria-current="page" class="navbar__item navbar__link navbar__link--active" href="/roblox-gamemodes/api/">API</a></div><div class="navbar__items navbar__items--right"><a href="https://github.com/codjo3/roblox-gamemodes" target="_blank" rel="noopener noreferrer" class="navbar__item navbar__link">GitHub<svg width="13.5" height="13.5" aria-hidden="true" viewBox="0 0 24 24" class="iconExternalLink_nPIU"><path fill="currentColor" d="M21 13v10h-21v-19h12v2h-10v15h17v-8h2zm3-12h-10.988l4.035 4-6.977 7.07 2.828 2.828 6.977-7.07 4.125 4.172v-11z"></path></svg></a><div class="toggle_vylO colorModeToggle_DEke"><button class="clean-btn toggleButton_gllP toggleButtonDisabled_aARS" type="button" disabled="" title="Switch between dark and light mode (currently light mode)" aria-label="Switch between dark and light mode (currently light mode)" aria-live="polite" aria-pressed="false"><svg viewBox="0 0 24 24" width="24" height="24" class="lightToggleIcon_pyhR"><path fill="currentColor" d="M12,9c1.65,0,3,1.35,3,3s-1.35,3-3,3s-3-1.35-3-3S10.35,9,12,9 M12,7c-2.76,0-5,2.24-5,5s2.24,5,5,5s5-2.24,5-5 S14.76,7,12,7L12,7z M2,13l2,0c0.55,0,1-0.45,1-1s-0.45-1-1-1l-2,0c-0.55,0-1,0.45-1,1S1.45,13,2,13z M20,13l2,0c0.55,0,1-0.45,1-1 s-0.45-1-1-1l-2,0c-0.55,0-1,0.45-1,1S19.45,13,20,13z M11,2v2c0,0.55,0.45,1,1,1s1-0.45,1-1V2c0-0.55-0.45-1-1-1S11,1.45,11,2z M11,20v2c0,0.55,0.45,1,1,1s1-0.45,1-1v-2c0-0.55-0.45-1-1-1C11.45,19,11,19.45,11,20z M5.99,4.58c-0.39-0.39-1.03-0.39-1.41,0 c-0.39,0.39-0.39,1.03,0,1.41l1.06,1.06c0.39,0.39,1.03,0.39,1.41,0s0.39-1.03,0-1.41L5.99,4.58z M18.36,16.95 c-0.39-0.39-1.03-0.39-1.41,0c-0.39,0.39-0.39,1.03,0,1.41l1.06,1.06c0.39,0.39,1.03,0.39,1.41,0c0.39-0.39,0.39-1.03,0-1.41 L18.36,16.95z M19.42,5.99c0.39-0.39,0.39-1.03,0-1.41c-0.39-0.39-1.03-0.39-1.41,0l-1.06,1.06c-0.39,0.39-0.39,1.03,0,1.41 s1.03,0.39,1.41,0L19.42,5.99z M7.05,18.36c0.39-0.39,0.39-1.03,0-1.41c-0.39-0.39-1.03-0.39-1.41,0l-1.06,1.06 c-0.39,0.39-0.39,1.03,0,1.41s1.03,0.39,1.41,0L7.05,18.36z"></path></svg><svg viewBox="0 0 24 24" width="24" height="24" class="darkToggleIcon_wfgR"><path fill="currentColor" d="M9.37,5.51C9.19,6.15,9.1,6.82,9.1,7.5c0,4.08,3.32,7.4,7.4,7.4c0.68,0,1.35-0.09,1.99-0.27C17.45,17.19,14.93,19,12,19 c-3.86,0-7-3.14-7-7C5,9.07,6.81,6.55,9.37,5.51z M12,3c-4.97,0-9,4.03-9,9s4.03,9,9,9s9-4.03,9-9c0-0.46-0.04-0.92-0.1-1.36 c-0.98,1.37-2.58,2.26-4.4,2.26c-2.98,0-5.4-2.42-5.4-5.4c0-1.81,0.89-3.42,2.26-4.4C12.92,3.04,12.46,3,12,3L12,3z"></path></svg></button></div><div class="navbarSearchContainer_Bca1"><div class="navbar__search"><span aria-label="expand searchbar" role="button" class="search-icon" tabindex="0"></span><input id="search_input_react" type="search" placeholder="Loading..." aria-label="Search" class="navbar__search-input search-bar" disabled=""></div></div></div></div><div role="presentation" class="navbar-sidebar__backdrop"></div></nav><div id="__docusaurus_skipToContent_fallback" class="main-wrapper mainWrapper_z2l0 docPageContainer_wNNk"><div class="docPage_Dpn1"><div class="docSidebarContainer_o_re"><div class="sidebar_njMd"><nav aria-label="Docs sidebar" class="menu thin-scrollbar menu_SIkG"><ul class="theme-doc-sidebar-menu menu__list"><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/roblox-gamemodes/api/GamemodeCore">​Gamemode​Core</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/roblox-gamemodes/api/HookContext">​Hook​Context</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/roblox-gamemodes/api/Signal">​Signal</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link menu__link--active" aria-current="page" href="/roblox-gamemodes/api/Terminal">​Terminal</a></li></ul></nav></div></div><main class="docMainContainer_HJE1"><div class="container padding-vert--lg"><div class="row"><div class="col docItemCol_MU3C"><div class="docItemContainer_Wv98"><article><div class="member_J0w1 markdown"><div class="tocCollapsible_ETCw theme-doc-toc-mobile tocMobile_oUs_"><button type="button" class="clean-btn tocCollapsibleButton_TO0P">On this page</button></div><header><h1 class="docTitle_mZRt" style="text-decoration:none"><span style="display:inline-block">Terminal</span></h1><div class="luaClassTags_EipM"></div><div>
+<p>A terminal (control-point capture) gamemode built on <code>GamemodeCore</code>.</p>
+<p>
+  Teams compete to hold a <code>BasePart</code> zone long enough to accumulate
+  points. The first team to reach <code>PointsNeeded</code> wins. Supports
+  overtime, stacking capture speed, defender win conditions, and
+  React-style hooks via the inherited <code>mount</code> API.
+</p>
+<pre class="language-lua"><code class="language-lua"><span class="token keyword">local</span> Terminal <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span>Packages<span class="token punctuation">.</span>GamemodeTerminal<span class="token punctuation">)</span>
+
+<span class="token keyword">local</span> gm <span class="token operator">=</span> Terminal<span class="token punctuation">.</span><span class="token function">new</span><span class="token punctuation">(</span><span class="token string">"RoundOne"</span><span class="token punctuation">,</span> <span class="token punctuation">{</span>
+    Teams <span class="token operator">=</span> <span class="token punctuation">{</span> game<span class="token punctuation">.</span>Teams<span class="token punctuation">.</span>Red<span class="token punctuation">,</span> game<span class="token punctuation">.</span>Teams<span class="token punctuation">.</span>Blue <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    Parts <span class="token operator">=</span> <span class="token punctuation">{</span> workspace<span class="token punctuation">.</span>ControlPoint <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    PointsNeeded <span class="token operator">=</span> <span class="token number">1200</span><span class="token punctuation">,</span>
+    CaptureTime <span class="token operator">=</span> <span class="token number">10</span><span class="token punctuation">,</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+gm<span class="token punctuation">.</span>Stopped<span class="token punctuation">:</span><span class="token function">Connect</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span>winner<span class="token punctuation">)</span>
+    <span class="token function">print</span><span class="token punctuation">(</span>winner<span class="token punctuation">.</span>Name <span class="token operator">..</span> <span class="token string">" wins!"</span><span class="token punctuation">)</span>
+<span class="token keyword">end</span><span class="token punctuation">)</span>
+
+gm<span class="token punctuation">:</span><span class="token function">Start</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+</code></pre>
+</div></header><h2 class="anchor anchorWithStickyNavbar_LWe7" id="types">Types<a href="#types" class="hash-link" aria-label="Direct link to Types" title="Direct link to Types">​</a></h2><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="TeamInfo"><code style="text-decoration:none">TeamInfo</code><a href="#TeamInfo" class="hash-link" aria-label="Direct link to TeamInfo" title="Direct link to TeamInfo">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/codjo3/roblox-gamemodes/blob/master/modules/gamemode-terminal/src/init.luau#L24"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code class="purple_ieR2">interface</code> <code>TeamInfo<!-- --> <!-- -->{</code><div class="inset_uKQm"><div><code>Points<!-- -->: </code><code class="blue_P4bS">number</code><span class="inlineDescription_G7Er">-- <span>
+<p>Accumulated score toward <code>PointsNeeded</code>.</p>
+</span></span></div><div><code>Capturing<!-- -->: </code><code class="blue_P4bS">number</code><span class="inlineDescription_G7Er">-- <span>
+<p>Current capture progress from <code>0</code> to <code>CaptureTime</code>.</p>
+</span></span></div><div><code>inZoneCount<!-- -->: </code><code class="blue_P4bS">number</code><span class="inlineDescription_G7Er">-- <span>
+<p>Number of eligible players currently in the zone.</p>
+</span></span></div><div><code>isHolder<!-- -->: </code><code class="blue_P4bS">boolean</code><span class="inlineDescription_G7Er">-- <span>
+<p>Whether this team is currently a holder.</p>
+</span></span></div></div><code>}</code></div><div>
+<p>Per-team state tracked each round.</p>
+</div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="Settings"><code style="text-decoration:none">Settings</code><a href="#Settings" class="hash-link" aria-label="Direct link to Settings" title="Direct link to Settings">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/codjo3/roblox-gamemodes/blob/master/modules/gamemode-terminal/src/init.luau#L53"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code class="purple_ieR2">interface</code> <code>Settings<!-- --> <!-- -->{</code><div class="inset_uKQm"><div><code>Teams<!-- -->: </code><code class="purple_ieR2">{</code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="https://developer.roblox.com/en-us/api-reference/class/Team" target="_blank" rel="noopener noreferrer">Team<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound" style="color:gray;vertical-align:middle;margin-left:2px"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></code><code class="purple_ieR2">}</code><span class="inlineDescription_G7Er">-- <span>
+<p>Teams competing in the round. Required.</p>
+</span></span></div><div><code>Parts<!-- -->: </code><code class="purple_ieR2">{</code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="https://developer.roblox.com/en-us/api-reference/class/BasePart" target="_blank" rel="noopener noreferrer">BasePart<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound" style="color:gray;vertical-align:middle;margin-left:2px"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></code><code class="purple_ieR2">}</code><span class="inlineDescription_G7Er">-- <span>
+<p>Parts that define the capture zone. Required.</p>
+</span></span></div><div><code>Increase<!-- -->: </code><code class="blue_P4bS">number?</code><span class="inlineDescription_G7Er">-- <span>
+<p>Points per second earned while holding. Defaults to <code>1</code>.</p>
+</span></span></div><div><code>Rollback<!-- -->: </code><code class="blue_P4bS">number?</code><span class="inlineDescription_G7Er">-- <span>
+<p>Points per second lost while not holding. Defaults to <code>1</code>.</p>
+</span></span></div><div><code>PointsNeeded<!-- -->: </code><code class="blue_P4bS">number?</code><span class="inlineDescription_G7Er">-- <span>
+<p>Points required to win. Defaults to <code>1200</code>.</p>
+</span></span></div><div><code>RequireDominanceToIncrease<!-- -->: </code><code class="blue_P4bS">boolean?</code><span class="inlineDescription_G7Er">-- <span>
+<p>Only earn points when opponent has zero. Defaults to <code>true</code>.</p>
+</span></span></div><div><code>ProgressWhileContested<!-- -->: </code><code class="blue_P4bS">boolean?</code><span class="inlineDescription_G7Er">-- <span>
+<p>Allow capture progress when both teams are present. Defaults to <code>true</code>.</p>
+</span></span></div><div><code>CaptureWhileDead<!-- -->: </code><code class="blue_P4bS">boolean?</code><span class="inlineDescription_G7Er">-- <span>
+<p>Count dead players toward zone occupation. Defaults to <code>false</code>.</p>
+</span></span></div><div><code>CaptureStacking<!-- -->: </code><code class="blue_P4bS">boolean?</code><span class="inlineDescription_G7Er">-- <span>
+<p>Scale capture speed by player count difference. Defaults to <code>false</code>.</p>
+</span></span></div><div><code>CaptureTime<!-- -->: </code><code class="blue_P4bS">number?</code><span class="inlineDescription_G7Er">-- <span>
+<p>Seconds to fully capture the point. Defaults to <code>1</code>.</p>
+</span></span></div><div><code>OvertimeThreshold<!-- -->: </code><code class="blue_P4bS">number?</code><span class="inlineDescription_G7Er">-- <span>
+<p>Elapsed seconds before overtime begins. <code>-1</code> disables. Defaults to <code>-1</code>.</p>
+</span></span></div><div><code>OvertimeIncrease<!-- -->: </code><code class="blue_P4bS">number?</code><span class="inlineDescription_G7Er">-- <span>
+<p>Points per second during overtime. Defaults to <code>1</code>.</p>
+</span></span></div><div><code>OvertimeRollback<!-- -->: </code><code class="blue_P4bS">number?</code><span class="inlineDescription_G7Er">-- <span>
+<p>Rollback rate during overtime. Defaults to <code>1</code>.</p>
+</span></span></div><div><code>OvertimePointsNeeded<!-- -->: </code><code class="blue_P4bS">number?</code><span class="inlineDescription_G7Er">-- <span>
+<p>Points to win during overtime. Defaults to <code>120</code>.</p>
+</span></span></div><div><code>OvertimeDefenderWinFullDominance<!-- -->: </code><code class="blue_P4bS">boolean?</code><span class="inlineDescription_G7Er">-- <span>
+<p>Defenders win if fully captured while opponent has zero. Defaults to <code>true</code>.</p>
+</span></span></div><div><code>DefendingTeam<!-- -->: </code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="https://developer.roblox.com/en-us/api-reference/class/Team" target="_blank" rel="noopener noreferrer">Team?<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound" style="color:gray;vertical-align:middle;margin-left:2px"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></code><span class="inlineDescription_G7Er">-- <span>
+<p>The defending team for overtime. Defaults to <code>Teams[1]</code>.</p>
+</span></span></div></div><code>}</code></div><div>
+<p>Configuration passed to <code>Terminal.new</code>.</p>
+</div><h2 class="anchor anchorWithStickyNavbar_LWe7" id="properties">Properties<a href="#properties" class="hash-link" aria-label="Direct link to Properties" title="Direct link to Properties">​</a></h2><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="ContestedChanged"><code style="text-decoration:none">ContestedChanged</code><a href="#ContestedChanged" class="hash-link" aria-label="Direct link to ContestedChanged" title="Direct link to ContestedChanged">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/codjo3/roblox-gamemodes/blob/master/modules/gamemode-terminal/src/init.luau#L493"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>Terminal<!-- -->.<!-- -->ContestedChanged<!-- -->:<!-- --> </code> <code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="/roblox-gamemodes/api/Signal">Signal</a></code><code class="op_lSLc">&lt;</code><code class="blue_P4bS">boolean</code><code class="op_lSLc">&gt;</code></div><div>
+<p>Fires when the zone transitions between contested and uncontested.</p>
+</div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="OvertimeEntered"><code style="text-decoration:none">OvertimeEntered</code><a href="#OvertimeEntered" class="hash-link" aria-label="Direct link to OvertimeEntered" title="Direct link to OvertimeEntered">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/codjo3/roblox-gamemodes/blob/master/modules/gamemode-terminal/src/init.luau#L500"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>Terminal<!-- -->.<!-- -->OvertimeEntered<!-- -->:<!-- --> </code> <code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="/roblox-gamemodes/api/Signal">Signal</a></code><code class="op_lSLc">&lt;</code><code class="op_lSLc">&gt;</code></div><div>
+<p>Fires when the round transitions into overtime.</p>
+</div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="PointsChanged"><code style="text-decoration:none">PointsChanged</code><a href="#PointsChanged" class="hash-link" aria-label="Direct link to PointsChanged" title="Direct link to PointsChanged">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/codjo3/roblox-gamemodes/blob/master/modules/gamemode-terminal/src/init.luau#L507"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>Terminal<!-- -->.<!-- -->PointsChanged<!-- -->:<!-- --> </code> <code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="/roblox-gamemodes/api/Signal">Signal</a></code><code class="op_lSLc">&lt;</code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="https://developer.roblox.com/en-us/api-reference/class/Team" target="_blank" rel="noopener noreferrer">Team,<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound" style="color:gray;vertical-align:middle;margin-left:2px"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></code><code class="blue_P4bS">number</code><code class="op_lSLc">&gt;</code></div><div>
+<p>Fires whenever a team's points value changes.</p>
+</div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="CapturingChanged"><code style="text-decoration:none">CapturingChanged</code><a href="#CapturingChanged" class="hash-link" aria-label="Direct link to CapturingChanged" title="Direct link to CapturingChanged">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/codjo3/roblox-gamemodes/blob/master/modules/gamemode-terminal/src/init.luau#L514"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>Terminal<!-- -->.<!-- -->CapturingChanged<!-- -->:<!-- --> </code> <code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="/roblox-gamemodes/api/Signal">Signal</a></code><code class="op_lSLc">&lt;</code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="https://developer.roblox.com/en-us/api-reference/class/Team" target="_blank" rel="noopener noreferrer">Team,<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound" style="color:gray;vertical-align:middle;margin-left:2px"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></code><code class="blue_P4bS">number</code><code class="op_lSLc">&gt;</code></div><div>
+<p>Fires whenever a team's capture progress changes.</p>
+</div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="HolderAdded"><code style="text-decoration:none">HolderAdded</code><a href="#HolderAdded" class="hash-link" aria-label="Direct link to HolderAdded" title="Direct link to HolderAdded">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/codjo3/roblox-gamemodes/blob/master/modules/gamemode-terminal/src/init.luau#L521"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>Terminal<!-- -->.<!-- -->HolderAdded<!-- -->:<!-- --> </code> <code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="/roblox-gamemodes/api/Signal">Signal</a></code><code class="op_lSLc">&lt;</code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="https://developer.roblox.com/en-us/api-reference/class/Team" target="_blank" rel="noopener noreferrer">Team<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound" style="color:gray;vertical-align:middle;margin-left:2px"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></code><code class="op_lSLc">&gt;</code></div><div>
+<p>Fires when a team becomes a holder (reaches full capture).</p>
+</div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="HolderRemoved"><code style="text-decoration:none">HolderRemoved</code><a href="#HolderRemoved" class="hash-link" aria-label="Direct link to HolderRemoved" title="Direct link to HolderRemoved">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/codjo3/roblox-gamemodes/blob/master/modules/gamemode-terminal/src/init.luau#L528"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>Terminal<!-- -->.<!-- -->HolderRemoved<!-- -->:<!-- --> </code> <code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="/roblox-gamemodes/api/Signal">Signal</a></code><code class="op_lSLc">&lt;</code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="https://developer.roblox.com/en-us/api-reference/class/Team" target="_blank" rel="noopener noreferrer">Team<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound" style="color:gray;vertical-align:middle;margin-left:2px"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></code><code class="op_lSLc">&gt;</code></div><div>
+<p>Fires when a team loses holder status.</p>
+</div><h2 class="anchor anchorWithStickyNavbar_LWe7" id="functions">Functions<a href="#functions" class="hash-link" aria-label="Direct link to Functions" title="Direct link to Functions">​</a></h2><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="new"><code style="text-decoration:none">new</code><a href="#new" class="hash-link" aria-label="Direct link to new" title="Direct link to new">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/codjo3/roblox-gamemodes/blob/master/modules/gamemode-terminal/src/init.luau#L413"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>Terminal<!-- -->.</code><code class="green_DgR4">new</code><code>(</code><div class="inset_uKQm"><div><code>name<!-- -->: </code><code class="blue_P4bS">string</code><code>,</code><span class="inlineDescription_G7Er">-- <span>
+<p>Unique name for this instance.</p>
+</span></span></div><div><code>settings<!-- -->: </code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="/roblox-gamemodes/api/Terminal#Settings">Settings</a></code><span class="inlineDescription_G7Er">-- <span>
+<p>Round configuration. <code>Teams</code> and <code>Parts</code> are required.</p>
+</span></span></div></div><code>) → </code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="/roblox-gamemodes/api/Terminal">Terminal</a></code></div><div>
+<p>Creates a new Terminal gamemode instance.</p>
+</div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="Start"><code style="text-decoration:none">Start</code><a href="#Start" class="hash-link" aria-label="Direct link to Start" title="Direct link to Start">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/codjo3/roblox-gamemodes/blob/master/modules/gamemode-terminal/src/init.luau#L543"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>Terminal<!-- -->:</code><code class="green_DgR4">Start</code><code>(</code><div class="inset_uKQm"><div><code>metadata<!-- -->: </code><code class="blue_P4bS">any?</code><span class="inlineDescription_G7Er">-- <span>
+<p>Forwarded to <code>Started</code> listeners.</p>
+</span></span></div></div><code>) → </code><code>(</code><code>)</code></div><div>
+<p>
+  Starts the round. Resets all per-team state, sets up QuickZone
+  detection, then calls <code>GamemodeCore:Start</code>.
+</p>
+</div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="Stop"><code style="text-decoration:none">Stop</code><a href="#Stop" class="hash-link" aria-label="Direct link to Stop" title="Direct link to Stop">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/codjo3/roblox-gamemodes/blob/master/modules/gamemode-terminal/src/init.luau#L573"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>Terminal<!-- -->:</code><code class="green_DgR4">Stop</code><code>(</code><div class="inset_uKQm"><div><code>winner<!-- -->: </code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="https://developer.roblox.com/en-us/api-reference/class/Team" target="_blank" rel="noopener noreferrer">Team?<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound" style="color:gray;vertical-align:middle;margin-left:2px"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></code><code>,</code><span class="inlineDescription_G7Er">-- <span>
+<p>The winning team, or <code>nil</code> for a draw.</p>
+</span></span></div><div><code>metadata<!-- -->: </code><code class="blue_P4bS">any?</code><span class="inlineDescription_G7Er">-- <span>
+<p>Forwarded to <code>Stopped</code> listeners.</p>
+</span></span></div></div><code>) → </code><code>(</code><code>)</code></div><div>
+<p>
+  Stops the round, tears down QuickZone, fires <code>Stopped</code>, then clears
+  all per-team state.
+</p>
+</div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="Destroy"><code style="text-decoration:none">Destroy</code><a href="#Destroy" class="hash-link" aria-label="Direct link to Destroy" title="Direct link to Destroy">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/codjo3/roblox-gamemodes/blob/master/modules/gamemode-terminal/src/init.luau#L589"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>Terminal<!-- -->:</code><code class="green_DgR4">Destroy</code><code>(</code><code>) → </code><code>(</code><code>)</code></div><div>
+<p>
+  Destroys the Terminal instance. Cleans up all Terminal signals then
+  calls <code>GamemodeCore:Destroy</code>.
+</p>
+</div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="mount"><code style="text-decoration:none">mount</code><a href="#mount" class="hash-link" aria-label="Direct link to mount" title="Direct link to mount">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/codjo3/roblox-gamemodes/blob/master/modules/gamemode-terminal/src/init.luau#L611"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>Terminal<!-- -->:</code><code class="green_DgR4">mount</code><code>(</code><code>fn<!-- -->: </code><code class="purple_ieR2">(</code><div class="inset_uKQm"><code>gm<!-- -->: </code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="/roblox-gamemodes/api/Terminal">Terminal</a></code><code class="purple_ieR2">,</code></div><div class="inset_uKQm"><code>ctx<!-- -->: </code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="/roblox-gamemodes/api/HookContext">HookContext</a></code></div><code class="purple_ieR2">)</code><code class="purple_ieR2"> → </code><code class="purple_ieR2">(</code><code class="purple_ieR2">)</code><code>) → </code><code class="purple_ieR2">(</code><code class="purple_ieR2">)</code><code class="purple_ieR2"> → </code><code class="purple_ieR2">(</code><code class="purple_ieR2">)</code></div><div>
+<p>
+  Attaches a reactive function to this Terminal instance.
+  Delegates to <code>GamemodeCore:mount</code>.
+</p>
+</div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="getState"><code style="text-decoration:none">getState</code><a href="#getState" class="hash-link" aria-label="Direct link to getState" title="Direct link to getState">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/codjo3/roblox-gamemodes/blob/master/modules/gamemode-terminal/src/init.luau#L627"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>Terminal<!-- -->:</code><code class="green_DgR4">getState</code><code>(</code><code>) → </code><code class="purple_ieR2">{</code><div class="inset_uKQm"><code>Active<!-- -->: </code><code class="blue_P4bS">boolean</code><code class="purple_ieR2">,</code></div><div class="inset_uKQm"><code>Paused<!-- -->: </code><code class="blue_P4bS">boolean</code><code class="purple_ieR2">,</code></div><div class="inset_uKQm"><code>Overtime<!-- -->: </code><code class="blue_P4bS">boolean</code><code class="purple_ieR2">,</code></div><div class="inset_uKQm"><code>Contested<!-- -->: </code><code class="blue_P4bS">boolean</code><code class="purple_ieR2">,</code></div><div class="inset_uKQm"><code>Elapsed<!-- -->: </code><code class="blue_P4bS">number</code><code class="purple_ieR2">,</code></div><div class="inset_uKQm"><code>PlayingTeams<!-- -->: </code><code class="green_DgR4">{</code><span><code>[</code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="https://developer.roblox.com/en-us/api-reference/class/Team" target="_blank" rel="noopener noreferrer">Team<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound" style="color:gray;vertical-align:middle;margin-left:2px"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></code><code>]</code></span><code>: </code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="/roblox-gamemodes/api/Terminal#TeamInfo">TeamInfo</a></code><code class="green_DgR4">}</code><code class="purple_ieR2">,</code></div><div class="inset_uKQm"><code>Holders<!-- -->: </code><code class="green_DgR4">{</code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="https://developer.roblox.com/en-us/api-reference/class/Team" target="_blank" rel="noopener noreferrer">Team<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound" style="color:gray;vertical-align:middle;margin-left:2px"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></code><code class="green_DgR4">}</code><code class="purple_ieR2">,</code></div><div class="inset_uKQm"><code>PointsNeeded<!-- -->: </code><code class="blue_P4bS">number</code><code class="purple_ieR2">,</code></div><div class="inset_uKQm"><code>CaptureTime<!-- -->: </code><code class="blue_P4bS">number</code><code class="purple_ieR2">,</code></div><div class="inset_uKQm"><code>Increase<!-- -->: </code><code class="blue_P4bS">number</code><code class="purple_ieR2">,</code></div><div class="inset_uKQm"><code>Rollback<!-- -->: </code><code class="blue_P4bS">number</code></div><code class="purple_ieR2">}</code></div><div>
+<p>
+  Returns a frozen snapshot of the current round state. Useful for
+  replicating to clients or reading state outside of a mount.
+</p>
+<pre class="language-lua"><code class="language-lua"><span class="token keyword">local</span> state <span class="token operator">=</span> gm<span class="token punctuation">:</span><span class="token function">getState</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token function">print</span><span class="token punctuation">(</span>state<span class="token punctuation">.</span>Active<span class="token punctuation">,</span> state<span class="token punctuation">.</span>Overtime<span class="token punctuation">,</span> state<span class="token punctuation">.</span>Elapsed<span class="token punctuation">)</span>
+</code></pre>
+</div></div></article></div><details><summary>Show raw api</summary><pre style="max-width:100%;white-space:pre-wrap">{
+    &quot;functions&quot;: [
+        {
+            &quot;name&quot;: &quot;new&quot;,
+            &quot;desc&quot;: &quot;Creates a new Terminal gamemode instance.&quot;,
+            &quot;params&quot;: [
+                {
+                    &quot;name&quot;: &quot;name&quot;,
+                    &quot;desc&quot;: &quot;Unique name for this instance.&quot;,
+                    &quot;lua_type&quot;: &quot;string&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;settings&quot;,
+                    &quot;desc&quot;: &quot;Round configuration. `Teams` and `Parts` are required.&quot;,
+                    &quot;lua_type&quot;: &quot;Settings&quot;
+                }
+            ],
+            &quot;returns&quot;: [
+                {
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;Terminal&quot;
+                }
+            ],
+            &quot;function_type&quot;: &quot;static&quot;,
+            &quot;source&quot;: {
+                &quot;line&quot;: 413,
+                &quot;path&quot;: &quot;modules/gamemode-terminal/src/init.luau&quot;
+            }
+        },
+        {
+            &quot;name&quot;: &quot;Start&quot;,
+            &quot;desc&quot;: &quot;Starts the round. Resets all per-team state, sets up QuickZone\ndetection, then calls `GamemodeCore:Start`.&quot;,
+            &quot;params&quot;: [
+                {
+                    &quot;name&quot;: &quot;metadata&quot;,
+                    &quot;desc&quot;: &quot;Forwarded to `Started` listeners.&quot;,
+                    &quot;lua_type&quot;: &quot;any?&quot;
+                }
+            ],
+            &quot;returns&quot;: [],
+            &quot;function_type&quot;: &quot;method&quot;,
+            &quot;source&quot;: {
+                &quot;line&quot;: 543,
+                &quot;path&quot;: &quot;modules/gamemode-terminal/src/init.luau&quot;
+            }
+        },
+        {
+            &quot;name&quot;: &quot;Stop&quot;,
+            &quot;desc&quot;: &quot;Stops the round, tears down QuickZone, fires `Stopped`, then clears\nall per-team state.&quot;,
+            &quot;params&quot;: [
+                {
+                    &quot;name&quot;: &quot;winner&quot;,
+                    &quot;desc&quot;: &quot;The winning team, or `nil` for a draw.&quot;,
+                    &quot;lua_type&quot;: &quot;Team?&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;metadata&quot;,
+                    &quot;desc&quot;: &quot;Forwarded to `Stopped` listeners.&quot;,
+                    &quot;lua_type&quot;: &quot;any?&quot;
+                }
+            ],
+            &quot;returns&quot;: [],
+            &quot;function_type&quot;: &quot;method&quot;,
+            &quot;source&quot;: {
+                &quot;line&quot;: 573,
+                &quot;path&quot;: &quot;modules/gamemode-terminal/src/init.luau&quot;
+            }
+        },
+        {
+            &quot;name&quot;: &quot;Destroy&quot;,
+            &quot;desc&quot;: &quot;Destroys the Terminal instance. Cleans up all Terminal signals then\ncalls `GamemodeCore:Destroy`.&quot;,
+            &quot;params&quot;: [],
+            &quot;returns&quot;: [],
+            &quot;function_type&quot;: &quot;method&quot;,
+            &quot;source&quot;: {
+                &quot;line&quot;: 589,
+                &quot;path&quot;: &quot;modules/gamemode-terminal/src/init.luau&quot;
+            }
+        },
+        {
+            &quot;name&quot;: &quot;mount&quot;,
+            &quot;desc&quot;: &quot;Attaches a reactive function to this Terminal instance.\nDelegates to `GamemodeCore:mount`.&quot;,
+            &quot;params&quot;: [
+                {
+                    &quot;name&quot;: &quot;fn&quot;,
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;(gm: Terminal, ctx: HookContext) -&gt; ()&quot;
+                }
+            ],
+            &quot;returns&quot;: [
+                {
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;() -&gt; ()&quot;
+                }
+            ],
+            &quot;function_type&quot;: &quot;method&quot;,
+            &quot;source&quot;: {
+                &quot;line&quot;: 611,
+                &quot;path&quot;: &quot;modules/gamemode-terminal/src/init.luau&quot;
+            }
+        },
+        {
+            &quot;name&quot;: &quot;getState&quot;,
+            &quot;desc&quot;: &quot;Returns a frozen snapshot of the current round state. Useful for\nreplicating to clients or reading state outside of a mount.\n\n```lua\nlocal state = gm:getState()\nprint(state.Active, state.Overtime, state.Elapsed)\n```&quot;,
+            &quot;params&quot;: [],
+            &quot;returns&quot;: [
+                {
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;{ Active: boolean, Paused: boolean, Overtime: boolean, Contested: boolean, Elapsed: number, PlayingTeams: { [Team]: TeamInfo }, Holders: { Team }, PointsNeeded: number, CaptureTime: number, Increase: number, Rollback: number }&quot;
+                }
+            ],
+            &quot;function_type&quot;: &quot;method&quot;,
+            &quot;source&quot;: {
+                &quot;line&quot;: 627,
+                &quot;path&quot;: &quot;modules/gamemode-terminal/src/init.luau&quot;
+            }
+        }
+    ],
+    &quot;properties&quot;: [
+        {
+            &quot;name&quot;: &quot;ContestedChanged&quot;,
+            &quot;desc&quot;: &quot;Fires when the zone transitions between contested and uncontested.\n\t&quot;,
+            &quot;lua_type&quot;: &quot;Signal&lt;boolean&gt;&quot;,
+            &quot;source&quot;: {
+                &quot;line&quot;: 493,
+                &quot;path&quot;: &quot;modules/gamemode-terminal/src/init.luau&quot;
+            }
+        },
+        {
+            &quot;name&quot;: &quot;OvertimeEntered&quot;,
+            &quot;desc&quot;: &quot;Fires when the round transitions into overtime.\n\t&quot;,
+            &quot;lua_type&quot;: &quot;Signal&lt;&gt;&quot;,
+            &quot;source&quot;: {
+                &quot;line&quot;: 500,
+                &quot;path&quot;: &quot;modules/gamemode-terminal/src/init.luau&quot;
+            }
+        },
+        {
+            &quot;name&quot;: &quot;PointsChanged&quot;,
+            &quot;desc&quot;: &quot;Fires whenever a team&#x27;s points value changes.\n\t&quot;,
+            &quot;lua_type&quot;: &quot;Signal&lt;Team, number&gt;&quot;,
+            &quot;source&quot;: {
+                &quot;line&quot;: 507,
+                &quot;path&quot;: &quot;modules/gamemode-terminal/src/init.luau&quot;
+            }
+        },
+        {
+            &quot;name&quot;: &quot;CapturingChanged&quot;,
+            &quot;desc&quot;: &quot;Fires whenever a team&#x27;s capture progress changes.\n\t&quot;,
+            &quot;lua_type&quot;: &quot;Signal&lt;Team, number&gt;&quot;,
+            &quot;source&quot;: {
+                &quot;line&quot;: 514,
+                &quot;path&quot;: &quot;modules/gamemode-terminal/src/init.luau&quot;
+            }
+        },
+        {
+            &quot;name&quot;: &quot;HolderAdded&quot;,
+            &quot;desc&quot;: &quot;Fires when a team becomes a holder (reaches full capture).\n\t&quot;,
+            &quot;lua_type&quot;: &quot;Signal&lt;Team&gt;&quot;,
+            &quot;source&quot;: {
+                &quot;line&quot;: 521,
+                &quot;path&quot;: &quot;modules/gamemode-terminal/src/init.luau&quot;
+            }
+        },
+        {
+            &quot;name&quot;: &quot;HolderRemoved&quot;,
+            &quot;desc&quot;: &quot;Fires when a team loses holder status.\n\t&quot;,
+            &quot;lua_type&quot;: &quot;Signal&lt;Team&gt;&quot;,
+            &quot;source&quot;: {
+                &quot;line&quot;: 528,
+                &quot;path&quot;: &quot;modules/gamemode-terminal/src/init.luau&quot;
+            }
+        }
+    ],
+    &quot;types&quot;: [
+        {
+            &quot;name&quot;: &quot;TeamInfo&quot;,
+            &quot;desc&quot;: &quot;Per-team state tracked each round.&quot;,
+            &quot;fields&quot;: [
+                {
+                    &quot;name&quot;: &quot;Points&quot;,
+                    &quot;lua_type&quot;: &quot;number&quot;,
+                    &quot;desc&quot;: &quot;Accumulated score toward `PointsNeeded`.&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;Capturing&quot;,
+                    &quot;lua_type&quot;: &quot;number&quot;,
+                    &quot;desc&quot;: &quot;Current capture progress from `0` to `CaptureTime`.&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;inZoneCount&quot;,
+                    &quot;lua_type&quot;: &quot;number&quot;,
+                    &quot;desc&quot;: &quot;Number of eligible players currently in the zone.&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;isHolder&quot;,
+                    &quot;lua_type&quot;: &quot;boolean&quot;,
+                    &quot;desc&quot;: &quot;Whether this team is currently a holder.&quot;
+                }
+            ],
+            &quot;source&quot;: {
+                &quot;line&quot;: 24,
+                &quot;path&quot;: &quot;modules/gamemode-terminal/src/init.luau&quot;
+            }
+        },
+        {
+            &quot;name&quot;: &quot;Settings&quot;,
+            &quot;desc&quot;: &quot;Configuration passed to `Terminal.new`.&quot;,
+            &quot;fields&quot;: [
+                {
+                    &quot;name&quot;: &quot;Teams&quot;,
+                    &quot;lua_type&quot;: &quot;{ Team }&quot;,
+                    &quot;desc&quot;: &quot;Teams competing in the round. Required.&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;Parts&quot;,
+                    &quot;lua_type&quot;: &quot;{ BasePart }&quot;,
+                    &quot;desc&quot;: &quot;Parts that define the capture zone. Required.&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;Increase&quot;,
+                    &quot;lua_type&quot;: &quot;number?&quot;,
+                    &quot;desc&quot;: &quot;Points per second earned while holding. Defaults to `1`.&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;Rollback&quot;,
+                    &quot;lua_type&quot;: &quot;number?&quot;,
+                    &quot;desc&quot;: &quot;Points per second lost while not holding. Defaults to `1`.&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;PointsNeeded&quot;,
+                    &quot;lua_type&quot;: &quot;number?&quot;,
+                    &quot;desc&quot;: &quot;Points required to win. Defaults to `1200`.&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;RequireDominanceToIncrease&quot;,
+                    &quot;lua_type&quot;: &quot;boolean?&quot;,
+                    &quot;desc&quot;: &quot;Only earn points when opponent has zero. Defaults to `true`.&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;ProgressWhileContested&quot;,
+                    &quot;lua_type&quot;: &quot;boolean?&quot;,
+                    &quot;desc&quot;: &quot;Allow capture progress when both teams are present. Defaults to `true`.&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;CaptureWhileDead&quot;,
+                    &quot;lua_type&quot;: &quot;boolean?&quot;,
+                    &quot;desc&quot;: &quot;Count dead players toward zone occupation. Defaults to `false`.&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;CaptureStacking&quot;,
+                    &quot;lua_type&quot;: &quot;boolean?&quot;,
+                    &quot;desc&quot;: &quot;Scale capture speed by player count difference. Defaults to `false`.&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;CaptureTime&quot;,
+                    &quot;lua_type&quot;: &quot;number?&quot;,
+                    &quot;desc&quot;: &quot;Seconds to fully capture the point. Defaults to `1`.&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;OvertimeThreshold&quot;,
+                    &quot;lua_type&quot;: &quot;number?&quot;,
+                    &quot;desc&quot;: &quot;Elapsed seconds before overtime begins. `-1` disables. Defaults to `-1`.&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;OvertimeIncrease&quot;,
+                    &quot;lua_type&quot;: &quot;number?&quot;,
+                    &quot;desc&quot;: &quot;Points per second during overtime. Defaults to `1`.&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;OvertimeRollback&quot;,
+                    &quot;lua_type&quot;: &quot;number?&quot;,
+                    &quot;desc&quot;: &quot;Rollback rate during overtime. Defaults to `1`.&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;OvertimePointsNeeded&quot;,
+                    &quot;lua_type&quot;: &quot;number?&quot;,
+                    &quot;desc&quot;: &quot;Points to win during overtime. Defaults to `120`.&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;OvertimeDefenderWinFullDominance&quot;,
+                    &quot;lua_type&quot;: &quot;boolean?&quot;,
+                    &quot;desc&quot;: &quot;Defenders win if fully captured while opponent has zero. Defaults to `true`.&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;DefendingTeam&quot;,
+                    &quot;lua_type&quot;: &quot;Team?&quot;,
+                    &quot;desc&quot;: &quot;The defending team for overtime. Defaults to `Teams[1]`.&quot;
+                }
+            ],
+            &quot;source&quot;: {
+                &quot;line&quot;: 53,
+                &quot;path&quot;: &quot;modules/gamemode-terminal/src/init.luau&quot;
+            }
+        }
+    ],
+    &quot;name&quot;: &quot;Terminal&quot;,
+    &quot;desc&quot;: &quot;A terminal (control-point capture) gamemode built on `GamemodeCore`.\n\nTeams compete to hold a `BasePart` zone long enough to accumulate\npoints. The first team to reach `PointsNeeded` wins. Supports\novertime, stacking capture speed, defender win conditions, and\nReact-style hooks via the inherited `mount` API.\n\n```lua\nlocal Terminal = require(Packages.GamemodeTerminal)\n\nlocal gm = Terminal.new(\&quot;RoundOne\&quot;, {\n    Teams = { game.Teams.Red, game.Teams.Blue },\n    Parts = { workspace.ControlPoint },\n    PointsNeeded = 1200,\n    CaptureTime = 10,\n})\n\ngm.Stopped:Connect(function(winner)\n    print(winner.Name .. \&quot; wins!\&quot;)\nend)\n\ngm:Start()\n```&quot;,
+    &quot;source&quot;: {
+        &quot;line&quot;: 402,
+        &quot;path&quot;: &quot;modules/gamemode-terminal/src/init.luau&quot;
+    }
+}</pre></details></div><div class="col col--3"><div class="tableOfContents_bqdL thin-scrollbar"><ul class="table-of-contents table-of-contents__left-border"><li><a href="#types" class="table-of-contents__link toc-highlight">Types</a><ul><li><a href="#Settings" class="table-of-contents__link toc-highlight">Settings</a></li><li><a href="#TeamInfo" class="table-of-contents__link toc-highlight">TeamInfo</a></li></ul></li><li><a href="#properties" class="table-of-contents__link toc-highlight">Properties</a><ul><li><a href="#CapturingChanged" class="table-of-contents__link toc-highlight">CapturingChanged</a></li><li><a href="#ContestedChanged" class="table-of-contents__link toc-highlight">ContestedChanged</a></li><li><a href="#HolderAdded" class="table-of-contents__link toc-highlight">HolderAdded</a></li><li><a href="#HolderRemoved" class="table-of-contents__link toc-highlight">HolderRemoved</a></li><li><a href="#OvertimeEntered" class="table-of-contents__link toc-highlight">OvertimeEntered</a></li><li><a href="#PointsChanged" class="table-of-contents__link toc-highlight">PointsChanged</a></li></ul></li><li><a href="#functions" class="table-of-contents__link toc-highlight">Functions</a><ul><li><a href="#Destroy" class="table-of-contents__link toc-highlight">:Destroy</a></li><li><a href="#getState" class="table-of-contents__link toc-highlight">:getState</a></li><li><a href="#mount" class="table-of-contents__link toc-highlight">:mount</a></li><li><a href="#Start" class="table-of-contents__link toc-highlight">:Start</a></li><li><a href="#Stop" class="table-of-contents__link toc-highlight">:Stop</a></li><li><a href="#new" class="table-of-contents__link toc-highlight">.new</a></li></ul></li></ul></div></div></div></div></main></div></div><footer class="footer footer--dark"><div class="container container-fluid"><div class="footer__bottom text--center"><div class="footer__copyright">Copyright © 2026 codjo3. Built with Moonwave and Docusaurus.</div></div></div></footer></div>
+</body>
+</html>

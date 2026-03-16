@@ -1,0 +1,438 @@
+<!doctype html>
+<html lang="en" dir="ltr" class="plugin-moonwave plugin-id-moonwave" data-has-hydrated="false">
+<head>
+<meta charset="UTF-8">
+<meta name="generator" content="Docusaurus v3.7.0">
+<title data-rh="true">GamemodeCore | roblox-gamemodes</title><meta data-rh="true" name="viewport" content="width=device-width,initial-scale=1"><meta data-rh="true" name="twitter:card" content="summary_large_image"><meta data-rh="true" property="og:url" content="https://codjo3.github.io/roblox-gamemodes/api/GamemodeCore"><meta data-rh="true" property="og:locale" content="en"><meta data-rh="true" name="docusaurus_locale" content="en"><meta data-rh="true" name="docusaurus_tag" content="default"><meta data-rh="true" name="docsearch:language" content="en"><meta data-rh="true" name="docsearch:docusaurus_tag" content="default"><meta data-rh="true" property="og:title" content="GamemodeCore | roblox-gamemodes"><meta data-rh="true" name="description" content="Reactive hook-based gamemode lifecycle core.
+
+Register a gamemode type with `GamemodeCore.register`, then create
+instances with `GamemodeCore.new`. Each instance manages an Active/Paused
+state machine, a per-frame tick loop, and a React-style hook system via
+`mount`.
+
+```lua
+local GamemodeCore = require(Packages.GamemodeCore)
+
+GamemodeCore.register(&quot;MyMode&quot;, function(self, dt)
+    -- custom per-frame logic
+end)
+
+local gm = GamemodeCore.new(&quot;MyMode&quot;, &quot;RoundOne&quot;, {
+    ScoreLimit = 100,
+})
+
+gm.Stopped:Connect(function(winner, metadata)
+    print(&quot;Winner:&quot;, winner)
+end)
+
+gm:Start()
+```"><meta data-rh="true" property="og:description" content="Reactive hook-based gamemode lifecycle core.
+
+Register a gamemode type with `GamemodeCore.register`, then create
+instances with `GamemodeCore.new`. Each instance manages an Active/Paused
+state machine, a per-frame tick loop, and a React-style hook system via
+`mount`.
+
+```lua
+local GamemodeCore = require(Packages.GamemodeCore)
+
+GamemodeCore.register(&quot;MyMode&quot;, function(self, dt)
+    -- custom per-frame logic
+end)
+
+local gm = GamemodeCore.new(&quot;MyMode&quot;, &quot;RoundOne&quot;, {
+    ScoreLimit = 100,
+})
+
+gm.Stopped:Connect(function(winner, metadata)
+    print(&quot;Winner:&quot;, winner)
+end)
+
+gm:Start()
+```"><link data-rh="true" rel="canonical" href="https://codjo3.github.io/roblox-gamemodes/api/GamemodeCore"><link data-rh="true" rel="alternate" href="https://codjo3.github.io/roblox-gamemodes/api/GamemodeCore" hreflang="en"><link data-rh="true" rel="alternate" href="https://codjo3.github.io/roblox-gamemodes/api/GamemodeCore" hreflang="x-default"><link rel="stylesheet" href="/roblox-gamemodes/assets/css/styles.7a4bdbad.css">
+<script src="/roblox-gamemodes/assets/js/runtime~main.ad3275aa.js" defer="defer"></script>
+<script src="/roblox-gamemodes/assets/js/main.3084554d.js" defer="defer"></script>
+</head>
+<body class="navigation-with-keyboard">
+<script>!function(){function t(t){document.documentElement.setAttribute("data-theme",t)}var e=function(){try{return new URLSearchParams(window.location.search).get("docusaurus-theme")}catch(t){}}()||function(){try{return window.localStorage.getItem("theme")}catch(t){}}();null!==e?t(e):window.matchMedia("(prefers-color-scheme: dark)").matches?t("dark"):(window.matchMedia("(prefers-color-scheme: light)").matches,t("light"))}(),function(){try{const c=new URLSearchParams(window.location.search).entries();for(var[t,e]of c)if(t.startsWith("docusaurus-data-")){var a=t.replace("docusaurus-data-","data-");document.documentElement.setAttribute(a,e)}}catch(t){}}()</script><div id="__docusaurus"><div role="region" aria-label="Skip to main content"><a class="skipToContent_fXgn" href="#__docusaurus_skipToContent_fallback">Skip to main content</a></div><nav aria-label="Main" class="navbar navbar--fixed-top"><div class="navbar__inner"><div class="navbar__items"><button aria-label="Toggle navigation bar" aria-expanded="false" class="navbar__toggle clean-btn" type="button"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><path stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="2" d="M4 7h22M4 15h22M4 23h22"></path></svg></button><a class="navbar__brand" href="/roblox-gamemodes/"><b class="navbar__title text--truncate">roblox-gamemodes</b></a><a class="navbar__item navbar__link" href="/roblox-gamemodes/docs/intro">Docs</a><a aria-current="page" class="navbar__item navbar__link navbar__link--active" href="/roblox-gamemodes/api/">API</a></div><div class="navbar__items navbar__items--right"><a href="https://github.com/codjo3/roblox-gamemodes" target="_blank" rel="noopener noreferrer" class="navbar__item navbar__link">GitHub<svg width="13.5" height="13.5" aria-hidden="true" viewBox="0 0 24 24" class="iconExternalLink_nPIU"><path fill="currentColor" d="M21 13v10h-21v-19h12v2h-10v15h17v-8h2zm3-12h-10.988l4.035 4-6.977 7.07 2.828 2.828 6.977-7.07 4.125 4.172v-11z"></path></svg></a><div class="toggle_vylO colorModeToggle_DEke"><button class="clean-btn toggleButton_gllP toggleButtonDisabled_aARS" type="button" disabled="" title="Switch between dark and light mode (currently light mode)" aria-label="Switch between dark and light mode (currently light mode)" aria-live="polite" aria-pressed="false"><svg viewBox="0 0 24 24" width="24" height="24" class="lightToggleIcon_pyhR"><path fill="currentColor" d="M12,9c1.65,0,3,1.35,3,3s-1.35,3-3,3s-3-1.35-3-3S10.35,9,12,9 M12,7c-2.76,0-5,2.24-5,5s2.24,5,5,5s5-2.24,5-5 S14.76,7,12,7L12,7z M2,13l2,0c0.55,0,1-0.45,1-1s-0.45-1-1-1l-2,0c-0.55,0-1,0.45-1,1S1.45,13,2,13z M20,13l2,0c0.55,0,1-0.45,1-1 s-0.45-1-1-1l-2,0c-0.55,0-1,0.45-1,1S19.45,13,20,13z M11,2v2c0,0.55,0.45,1,1,1s1-0.45,1-1V2c0-0.55-0.45-1-1-1S11,1.45,11,2z M11,20v2c0,0.55,0.45,1,1,1s1-0.45,1-1v-2c0-0.55-0.45-1-1-1C11.45,19,11,19.45,11,20z M5.99,4.58c-0.39-0.39-1.03-0.39-1.41,0 c-0.39,0.39-0.39,1.03,0,1.41l1.06,1.06c0.39,0.39,1.03,0.39,1.41,0s0.39-1.03,0-1.41L5.99,4.58z M18.36,16.95 c-0.39-0.39-1.03-0.39-1.41,0c-0.39,0.39-0.39,1.03,0,1.41l1.06,1.06c0.39,0.39,1.03,0.39,1.41,0c0.39-0.39,0.39-1.03,0-1.41 L18.36,16.95z M19.42,5.99c0.39-0.39,0.39-1.03,0-1.41c-0.39-0.39-1.03-0.39-1.41,0l-1.06,1.06c-0.39,0.39-0.39,1.03,0,1.41 s1.03,0.39,1.41,0L19.42,5.99z M7.05,18.36c0.39-0.39,0.39-1.03,0-1.41c-0.39-0.39-1.03-0.39-1.41,0l-1.06,1.06 c-0.39,0.39-0.39,1.03,0,1.41s1.03,0.39,1.41,0L7.05,18.36z"></path></svg><svg viewBox="0 0 24 24" width="24" height="24" class="darkToggleIcon_wfgR"><path fill="currentColor" d="M9.37,5.51C9.19,6.15,9.1,6.82,9.1,7.5c0,4.08,3.32,7.4,7.4,7.4c0.68,0,1.35-0.09,1.99-0.27C17.45,17.19,14.93,19,12,19 c-3.86,0-7-3.14-7-7C5,9.07,6.81,6.55,9.37,5.51z M12,3c-4.97,0-9,4.03-9,9s4.03,9,9,9s9-4.03,9-9c0-0.46-0.04-0.92-0.1-1.36 c-0.98,1.37-2.58,2.26-4.4,2.26c-2.98,0-5.4-2.42-5.4-5.4c0-1.81,0.89-3.42,2.26-4.4C12.92,3.04,12.46,3,12,3L12,3z"></path></svg></button></div><div class="navbarSearchContainer_Bca1"><div class="navbar__search"><span aria-label="expand searchbar" role="button" class="search-icon" tabindex="0"></span><input id="search_input_react" type="search" placeholder="Loading..." aria-label="Search" class="navbar__search-input search-bar" disabled=""></div></div></div></div><div role="presentation" class="navbar-sidebar__backdrop"></div></nav><div id="__docusaurus_skipToContent_fallback" class="main-wrapper mainWrapper_z2l0 docPageContainer_wNNk"><div class="docPage_Dpn1"><div class="docSidebarContainer_o_re"><div class="sidebar_njMd"><nav aria-label="Docs sidebar" class="menu thin-scrollbar menu_SIkG"><ul class="theme-doc-sidebar-menu menu__list"><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link menu__link--active" aria-current="page" href="/roblox-gamemodes/api/GamemodeCore">​Gamemode​Core</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/roblox-gamemodes/api/HookContext">​Hook​Context</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/roblox-gamemodes/api/Signal">​Signal</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/roblox-gamemodes/api/Terminal">​Terminal</a></li></ul></nav></div></div><main class="docMainContainer_HJE1"><div class="container padding-vert--lg"><div class="row"><div class="col docItemCol_MU3C"><div class="docItemContainer_Wv98"><article><div class="member_J0w1 markdown"><div class="tocCollapsible_ETCw theme-doc-toc-mobile tocMobile_oUs_"><button type="button" class="clean-btn tocCollapsibleButton_TO0P">On this page</button></div><header><h1 class="docTitle_mZRt" style="text-decoration:none"><span style="display:inline-block">Gamemode</span><span style="display:inline-block">Core</span></h1><div class="luaClassTags_EipM"></div><div>
+<p>Reactive hook-based gamemode lifecycle core.</p>
+<p>
+  Register a gamemode type with <code>GamemodeCore.register</code>, then create
+  instances with <code>GamemodeCore.new</code>. Each instance manages an Active/Paused
+  state machine, a per-frame tick loop, and a React-style hook system via
+  <code>mount</code>.
+</p>
+<pre class="language-lua"><code class="language-lua"><span class="token keyword">local</span> GamemodeCore <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span>Packages<span class="token punctuation">.</span>GamemodeCore<span class="token punctuation">)</span>
+
+GamemodeCore<span class="token punctuation">.</span><span class="token function">register</span><span class="token punctuation">(</span><span class="token string">"MyMode"</span><span class="token punctuation">,</span> <span class="token keyword">function</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> dt<span class="token punctuation">)</span>
+    <span class="token comment">-- custom per-frame logic</span>
+<span class="token keyword">end</span><span class="token punctuation">)</span>
+
+<span class="token keyword">local</span> gm <span class="token operator">=</span> GamemodeCore<span class="token punctuation">.</span><span class="token function">new</span><span class="token punctuation">(</span><span class="token string">"MyMode"</span><span class="token punctuation">,</span> <span class="token string">"RoundOne"</span><span class="token punctuation">,</span> <span class="token punctuation">{</span>
+    ScoreLimit <span class="token operator">=</span> <span class="token number">100</span><span class="token punctuation">,</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+gm<span class="token punctuation">.</span>Stopped<span class="token punctuation">:</span><span class="token function">Connect</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span>winner<span class="token punctuation">,</span> metadata<span class="token punctuation">)</span>
+    <span class="token function">print</span><span class="token punctuation">(</span><span class="token string">"Winner:"</span><span class="token punctuation">,</span> winner<span class="token punctuation">)</span>
+<span class="token keyword">end</span><span class="token punctuation">)</span>
+
+gm<span class="token punctuation">:</span><span class="token function">Start</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+</code></pre>
+</div></header><h2 class="anchor anchorWithStickyNavbar_LWe7" id="types">Types<a href="#types" class="hash-link" aria-label="Direct link to Types" title="Direct link to Types">​</a></h2><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="Config"><code style="text-decoration:none">Config</code><a href="#Config" class="hash-link" aria-label="Direct link to Config" title="Direct link to Config">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/codjo3/roblox-gamemodes/blob/master/modules/gamemode-core/src/init.luau#L561"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code class="purple_ieR2">type</code> <code>Config<!-- --> = </code> <code class="purple_ieR2">{</code><span><code>[</code><code class="blue_P4bS">string</code><code>]</code></span><code>: </code><code class="blue_P4bS">any</code><code class="purple_ieR2">}</code></div><div>
+<p>
+  A free-form config table passed to <code>GamemodeCore.new</code>. Every key is
+  copied directly onto the instance.
+</p>
+</div><h2 class="anchor anchorWithStickyNavbar_LWe7" id="properties">Properties<a href="#properties" class="hash-link" aria-label="Direct link to Properties" title="Direct link to Properties">​</a></h2><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="Started"><code style="text-decoration:none">Started</code><a href="#Started" class="hash-link" aria-label="Direct link to Started" title="Direct link to Started">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/codjo3/roblox-gamemodes/blob/master/modules/gamemode-core/src/init.luau#L662"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>GamemodeCore<!-- -->.<!-- -->Started<!-- -->:<!-- --> </code> <code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="/roblox-gamemodes/api/Signal">Signal</a></code><code class="op_lSLc">&lt;</code><code class="blue_P4bS">any?</code><code class="op_lSLc">&gt;</code></div><div>
+<p>Fires when the gamemode starts. Receives the optional metadata passed to <code>Start</code>.</p>
+</div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="Stopped"><code style="text-decoration:none">Stopped</code><a href="#Stopped" class="hash-link" aria-label="Direct link to Stopped" title="Direct link to Stopped">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/codjo3/roblox-gamemodes/blob/master/modules/gamemode-core/src/init.luau#L669"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>GamemodeCore<!-- -->.<!-- -->Stopped<!-- -->:<!-- --> </code> <code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="/roblox-gamemodes/api/Signal">Signal</a></code><code class="op_lSLc">&lt;</code><code class="blue_P4bS">any?,</code><code class="blue_P4bS">any?</code><code class="op_lSLc">&gt;</code></div><div>
+<p>Fires when the gamemode stops. Receives the winner and optional metadata passed to <code>Stop</code>.</p>
+</div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="OnPaused"><code style="text-decoration:none">OnPaused</code><a href="#OnPaused" class="hash-link" aria-label="Direct link to OnPaused" title="Direct link to OnPaused">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/codjo3/roblox-gamemodes/blob/master/modules/gamemode-core/src/init.luau#L676"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>GamemodeCore<!-- -->.<!-- -->OnPaused<!-- -->:<!-- --> </code> <code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="/roblox-gamemodes/api/Signal">Signal</a></code><code class="op_lSLc">&lt;</code><code class="blue_P4bS">any?</code><code class="op_lSLc">&gt;</code></div><div>
+<p>Fires when the gamemode is paused. Receives the optional metadata passed to <code>Pause</code>.</p>
+</div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="ElapsedChanged"><code style="text-decoration:none">ElapsedChanged</code><a href="#ElapsedChanged" class="hash-link" aria-label="Direct link to ElapsedChanged" title="Direct link to ElapsedChanged">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/codjo3/roblox-gamemodes/blob/master/modules/gamemode-core/src/init.luau#L683"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>GamemodeCore<!-- -->.<!-- -->ElapsedChanged<!-- -->:<!-- --> </code> <code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="/roblox-gamemodes/api/Signal">Signal</a></code><code class="op_lSLc">&lt;</code><code class="blue_P4bS">number</code><code class="op_lSLc">&gt;</code></div><div>
+<p>Fires every Heartbeat while the gamemode is active and unpaused, with the current elapsed time.</p>
+</div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="Destroying"><code style="text-decoration:none">Destroying</code><a href="#Destroying" class="hash-link" aria-label="Direct link to Destroying" title="Direct link to Destroying">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/codjo3/roblox-gamemodes/blob/master/modules/gamemode-core/src/init.luau#L690"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>GamemodeCore<!-- -->.<!-- -->Destroying<!-- -->:<!-- --> </code> <code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="/roblox-gamemodes/api/Signal">Signal</a></code><code class="op_lSLc">&lt;</code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="/roblox-gamemodes/api/GamemodeCore">GamemodeCore</a></code><code class="op_lSLc">&gt;</code></div><div>
+<p>Fires just before the gamemode is destroyed.</p>
+</div><h2 class="anchor anchorWithStickyNavbar_LWe7" id="functions">Functions<a href="#functions" class="hash-link" aria-label="Direct link to Functions" title="Direct link to Functions">​</a></h2><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="register"><code style="text-decoration:none">register</code><a href="#register" class="hash-link" aria-label="Direct link to register" title="Direct link to register">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/codjo3/roblox-gamemodes/blob/master/modules/gamemode-core/src/init.luau#L612"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>GamemodeCore<!-- -->.</code><code class="green_DgR4">register</code><code>(</code><div class="inset_uKQm"><div><code>gmType<!-- -->: </code><code class="blue_P4bS">string</code><code>,</code><span class="inlineDescription_G7Er">-- <span>
+<p>Unique identifier for this gamemode type.</p>
+</span></span></div><div><code>tickFn<!-- -->: </code><code class="purple_ieR2">(</code><div class="inset_uKQm"><code>self<!-- -->: </code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="/roblox-gamemodes/api/GamemodeCore">GamemodeCore</a></code><code class="purple_ieR2">,</code></div><div class="inset_uKQm"><code>dt<!-- -->: </code><code class="blue_P4bS">number</code></div><code class="purple_ieR2">)</code><code class="purple_ieR2"> → </code><code class="purple_ieR2">(</code><code class="purple_ieR2">)</code><span class="inlineDescription_G7Er">-- <span>
+<p>Called every Heartbeat while active and unpaused.</p>
+</span></span></div></div><code>) → </code><code>(</code><code>)</code></div><div>
+<p>
+  Registers a gamemode type with a tick function. Must be called before
+  <code>GamemodeCore.new</code> for that type. Registering the same type twice
+  overwrites the previous registration with a warning.
+</p>
+<pre class="language-lua"><code class="language-lua">GamemodeCore<span class="token punctuation">.</span><span class="token function">register</span><span class="token punctuation">(</span><span class="token string">"MyMode"</span><span class="token punctuation">,</span> <span class="token keyword">function</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> dt<span class="token punctuation">)</span>
+    <span class="token keyword">if</span> self<span class="token punctuation">.</span>Elapsed <span class="token operator">></span> <span class="token number">300</span> <span class="token keyword">then</span>
+        self<span class="token punctuation">:</span><span class="token function">Stop</span><span class="token punctuation">(</span><span class="token keyword">nil</span><span class="token punctuation">)</span>
+    <span class="token keyword">end</span>
+<span class="token keyword">end</span><span class="token punctuation">)</span>
+</code></pre>
+</div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="new"><code style="text-decoration:none">new</code><a href="#new" class="hash-link" aria-label="Direct link to new" title="Direct link to new">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/codjo3/roblox-gamemodes/blob/master/modules/gamemode-core/src/init.luau#L637"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>GamemodeCore<!-- -->.</code><code class="green_DgR4">new</code><code>(</code><div class="inset_uKQm"><div><code>gmType<!-- -->: </code><code class="blue_P4bS">string</code><code>,</code><span class="inlineDescription_G7Er">-- <span>
+<p>A type previously registered with <code>GamemodeCore.register</code>.</p>
+</span></span></div><div><code>name<!-- -->: </code><code class="blue_P4bS">string</code><code>,</code><span class="inlineDescription_G7Er">-- <span>
+<p>Unique name for this instance. Used by <code>GamemodeCore.getByName</code>.</p>
+</span></span></div><div><code>config<!-- -->: </code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="/roblox-gamemodes/api/GamemodeCore#Config">Config</a></code><span class="inlineDescription_G7Er">-- <span>
+<p>Key-value pairs copied onto the instance.</p>
+</span></span></div></div><code>) → </code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="/roblox-gamemodes/api/GamemodeCore">GamemodeCore</a></code></div><div>
+<p>
+  Creates a new <code>GamemodeCore</code> instance of the given registered type.
+  Every key in <code>config</code> is shallow-copied onto the instance.
+</p>
+<pre class="language-lua"><code class="language-lua"><span class="token keyword">local</span> gm <span class="token operator">=</span> GamemodeCore<span class="token punctuation">.</span><span class="token function">new</span><span class="token punctuation">(</span><span class="token string">"MyMode"</span><span class="token punctuation">,</span> <span class="token string">"RoundOne"</span><span class="token punctuation">,</span> <span class="token punctuation">{</span>
+    ScoreLimit <span class="token operator">=</span> <span class="token number">100</span><span class="token punctuation">,</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+</code></pre>
+</div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="getByName"><code style="text-decoration:none">getByName</code><a href="#getByName" class="hash-link" aria-label="Direct link to getByName" title="Direct link to getByName">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/codjo3/roblox-gamemodes/blob/master/modules/gamemode-core/src/init.luau#L704"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>GamemodeCore<!-- -->.</code><code class="green_DgR4">getByName</code><code>(</code><code>name<!-- -->: </code><code class="blue_P4bS">string</code><code>) → </code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="/roblox-gamemodes/api/GamemodeCore">GamemodeCore?</a></code></div><div>
+<p>
+  Returns the <code>GamemodeCore</code> instance registered under <code>name</code>, or <code>nil</code>
+  if no such instance exists.
+</p>
+</div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="mount"><code style="text-decoration:none">mount</code><a href="#mount" class="hash-link" aria-label="Direct link to mount" title="Direct link to mount">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/codjo3/roblox-gamemodes/blob/master/modules/gamemode-core/src/init.luau#L734"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>GamemodeCore<!-- -->:</code><code class="green_DgR4">mount</code><code>(</code><div class="inset_uKQm"><div><code>fn<!-- -->: </code><code class="purple_ieR2">(</code><div class="inset_uKQm"><code>gm<!-- -->: </code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="/roblox-gamemodes/api/GamemodeCore">GamemodeCore</a></code><code class="purple_ieR2">,</code></div><div class="inset_uKQm"><code>ctx<!-- -->: </code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="/roblox-gamemodes/api/HookContext">HookContext</a></code></div><code class="purple_ieR2">)</code><code class="purple_ieR2"> → </code><code class="purple_ieR2">(</code><code class="purple_ieR2">)</code><span class="inlineDescription_G7Er">-- <span>
+<p>Reactive function to mount.</p>
+</span></span></div></div><code>) → </code><code class="purple_ieR2">(</code><code class="purple_ieR2">)</code><code class="purple_ieR2"> → </code><code class="purple_ieR2">(</code><code class="purple_ieR2">)</code><span class="inlineDescription_G7Er">-- <span>
+<p>Call to unmount and clean up.</p>
+</span></span></div><div>
+<p>
+  Attaches a reactive function to the gamemode. The function receives the
+  instance and a <code>HookContext</code> and is called every Heartbeat while the
+  gamemode is active and unpaused.
+</p>
+<p>
+  Returns an unmount function. Call it to detach the mount and run any
+  pending <code>useEffect</code> cleanups.
+</p>
+<pre class="language-lua"><code class="language-lua"><span class="token keyword">local</span> unmount <span class="token operator">=</span> gm<span class="token punctuation">:</span><span class="token function">mount</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> ctx<span class="token punctuation">)</span>
+    <span class="token keyword">local</span> score<span class="token punctuation">,</span> setScore <span class="token operator">=</span> ctx<span class="token punctuation">:</span><span class="token function">useState</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span>
+
+    ctx<span class="token punctuation">:</span><span class="token function">useEffect</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+        <span class="token keyword">local</span> c <span class="token operator">=</span> self<span class="token punctuation">.</span>Stopped<span class="token punctuation">:</span><span class="token function">Connect</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token function">setScore</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span> <span class="token keyword">end</span><span class="token punctuation">)</span>
+        <span class="token keyword">return</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> c<span class="token punctuation">:</span><span class="token function">Disconnect</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">end</span>
+    <span class="token keyword">end</span><span class="token punctuation">,</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token keyword">end</span><span class="token punctuation">)</span>
+
+<span class="token comment">-- later:</span>
+<span class="token function">unmount</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+</code></pre>
+</div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="Start"><code style="text-decoration:none">Start</code><a href="#Start" class="hash-link" aria-label="Direct link to Start" title="Direct link to Start">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/codjo3/roblox-gamemodes/blob/master/modules/gamemode-core/src/init.luau#L766"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>GamemodeCore<!-- -->:</code><code class="green_DgR4">Start</code><code>(</code><div class="inset_uKQm"><div><code>metadata<!-- -->: </code><code class="blue_P4bS">any?</code><span class="inlineDescription_G7Er">-- <span>
+<p>Optional value forwarded to <code>Started</code> listeners.</p>
+</span></span></div></div><code>) → </code><code>(</code><code>)</code></div><div>
+<p>
+  Starts the gamemode. Transitions <code>Active</code> to <code>true</code>, resets <code>Elapsed</code>
+  to <code>0</code>, begins the Heartbeat loop, ticks all mounted functions once,
+  then fires <code>Started</code>.
+</p>
+<p>Does nothing if already active.</p>
+</div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="Stop"><code style="text-decoration:none">Stop</code><a href="#Stop" class="hash-link" aria-label="Direct link to Stop" title="Direct link to Stop">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/codjo3/roblox-gamemodes/blob/master/modules/gamemode-core/src/init.luau#L809"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>GamemodeCore<!-- -->:</code><code class="green_DgR4">Stop</code><code>(</code><div class="inset_uKQm"><div><code>winner<!-- -->: </code><code class="blue_P4bS">any?</code><code>,</code><span class="inlineDescription_G7Er">-- <span>
+<p>Passed as the first argument to <code>Stopped</code> listeners.</p>
+</span></span></div><div><code>metadata<!-- -->: </code><code class="blue_P4bS">any?</code><span class="inlineDescription_G7Er">-- <span>
+<p>Passed as the second argument to <code>Stopped</code> listeners.</p>
+</span></span></div></div><code>) → </code><code>(</code><code>)</code></div><div>
+<p>
+  Stops the gamemode. Disconnects the Heartbeat loop, flushes all
+  <code>useEffect</code> cleanups, fires <code>Stopped</code>, then resets <code>Elapsed</code> to <code>0</code>.
+</p>
+<p>Does nothing if not active.</p>
+</div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="Pause"><code style="text-decoration:none">Pause</code><a href="#Pause" class="hash-link" aria-label="Direct link to Pause" title="Direct link to Pause">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/codjo3/roblox-gamemodes/blob/master/modules/gamemode-core/src/init.luau#L838"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>GamemodeCore<!-- -->:</code><code class="green_DgR4">Pause</code><code>(</code><div class="inset_uKQm"><div><code>metadata<!-- -->: </code><code class="blue_P4bS">any?</code><span class="inlineDescription_G7Er">-- <span>
+<p>Optional value forwarded to <code>OnPaused</code> listeners.</p>
+</span></span></div></div><code>) → </code><code>(</code><code>)</code></div><div>
+<p>
+  Pauses the gamemode, suspending the tick loop and mount calls.
+  Fires <code>OnPaused</code>. Does nothing if not active or already paused.
+</p>
+</div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="Resume"><code style="text-decoration:none">Resume</code><a href="#Resume" class="hash-link" aria-label="Direct link to Resume" title="Direct link to Resume">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/codjo3/roblox-gamemodes/blob/master/modules/gamemode-core/src/init.luau#L851"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>GamemodeCore<!-- -->:</code><code class="green_DgR4">Resume</code><code>(</code><code>) → </code><code>(</code><code>)</code></div><div>
+<p>Resumes a paused gamemode. Does nothing if not active or not paused.</p>
+</div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="Destroy"><code style="text-decoration:none">Destroy</code><a href="#Destroy" class="hash-link" aria-label="Direct link to Destroy" title="Direct link to Destroy">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/codjo3/roblox-gamemodes/blob/master/modules/gamemode-core/src/init.luau#L867"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>GamemodeCore<!-- -->:</code><code class="green_DgR4">Destroy</code><code>(</code><code>) → </code><code>(</code><code>)</code></div><div>
+<p>
+  Destroys the gamemode. Fires <code>Destroying</code>, stops the round if active,
+  destroys all mounts and signals, and removes the instance from the
+  global registry.
+</p>
+<p>After calling this, the instance must not be used again.</p>
+</div></div></article></div><details><summary>Show raw api</summary><pre style="max-width:100%;white-space:pre-wrap">{
+    &quot;functions&quot;: [
+        {
+            &quot;name&quot;: &quot;register&quot;,
+            &quot;desc&quot;: &quot;Registers a gamemode type with a tick function. Must be called before\n`GamemodeCore.new` for that type. Registering the same type twice\noverwrites the previous registration with a warning.\n\n```lua\nGamemodeCore.register(\&quot;MyMode\&quot;, function(self, dt)\n    if self.Elapsed &gt; 300 then\n        self:Stop(nil)\n    end\nend)\n```&quot;,
+            &quot;params&quot;: [
+                {
+                    &quot;name&quot;: &quot;gmType&quot;,
+                    &quot;desc&quot;: &quot;Unique identifier for this gamemode type.&quot;,
+                    &quot;lua_type&quot;: &quot;string&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;tickFn&quot;,
+                    &quot;desc&quot;: &quot;Called every Heartbeat while active and unpaused.&quot;,
+                    &quot;lua_type&quot;: &quot;(self: GamemodeCore, dt: number) -&gt; ()&quot;
+                }
+            ],
+            &quot;returns&quot;: [],
+            &quot;function_type&quot;: &quot;static&quot;,
+            &quot;source&quot;: {
+                &quot;line&quot;: 612,
+                &quot;path&quot;: &quot;modules/gamemode-core/src/init.luau&quot;
+            }
+        },
+        {
+            &quot;name&quot;: &quot;new&quot;,
+            &quot;desc&quot;: &quot;Creates a new `GamemodeCore` instance of the given registered type.\nEvery key in `config` is shallow-copied onto the instance.\n\n```lua\nlocal gm = GamemodeCore.new(\&quot;MyMode\&quot;, \&quot;RoundOne\&quot;, {\n    ScoreLimit = 100,\n})\n```&quot;,
+            &quot;params&quot;: [
+                {
+                    &quot;name&quot;: &quot;gmType&quot;,
+                    &quot;desc&quot;: &quot;A type previously registered with `GamemodeCore.register`.&quot;,
+                    &quot;lua_type&quot;: &quot;string&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;name&quot;,
+                    &quot;desc&quot;: &quot;Unique name for this instance. Used by `GamemodeCore.getByName`.&quot;,
+                    &quot;lua_type&quot;: &quot;string&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;config&quot;,
+                    &quot;desc&quot;: &quot;Key-value pairs copied onto the instance.&quot;,
+                    &quot;lua_type&quot;: &quot;Config&quot;
+                }
+            ],
+            &quot;returns&quot;: [
+                {
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;GamemodeCore&quot;
+                }
+            ],
+            &quot;function_type&quot;: &quot;static&quot;,
+            &quot;source&quot;: {
+                &quot;line&quot;: 637,
+                &quot;path&quot;: &quot;modules/gamemode-core/src/init.luau&quot;
+            }
+        },
+        {
+            &quot;name&quot;: &quot;getByName&quot;,
+            &quot;desc&quot;: &quot;Returns the `GamemodeCore` instance registered under `name`, or `nil`\nif no such instance exists.&quot;,
+            &quot;params&quot;: [
+                {
+                    &quot;name&quot;: &quot;name&quot;,
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;string&quot;
+                }
+            ],
+            &quot;returns&quot;: [
+                {
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;GamemodeCore?&quot;
+                }
+            ],
+            &quot;function_type&quot;: &quot;static&quot;,
+            &quot;source&quot;: {
+                &quot;line&quot;: 704,
+                &quot;path&quot;: &quot;modules/gamemode-core/src/init.luau&quot;
+            }
+        },
+        {
+            &quot;name&quot;: &quot;mount&quot;,
+            &quot;desc&quot;: &quot;Attaches a reactive function to the gamemode. The function receives the\ninstance and a `HookContext` and is called every Heartbeat while the\ngamemode is active and unpaused.\n\nReturns an unmount function. Call it to detach the mount and run any\npending `useEffect` cleanups.\n\n```lua\nlocal unmount = gm:mount(function(self, ctx)\n    local score, setScore = ctx:useState(0)\n\n    ctx:useEffect(function()\n        local c = self.Stopped:Connect(function() setScore(0) end)\n        return function() c:Disconnect() end\n    end, {})\nend)\n\n-- later:\nunmount()\n```&quot;,
+            &quot;params&quot;: [
+                {
+                    &quot;name&quot;: &quot;fn&quot;,
+                    &quot;desc&quot;: &quot;Reactive function to mount.&quot;,
+                    &quot;lua_type&quot;: &quot;(gm: GamemodeCore, ctx: HookContext) -&gt; ()&quot;
+                }
+            ],
+            &quot;returns&quot;: [
+                {
+                    &quot;desc&quot;: &quot;Call to unmount and clean up.&quot;,
+                    &quot;lua_type&quot;: &quot;() -&gt; ()&quot;
+                }
+            ],
+            &quot;function_type&quot;: &quot;method&quot;,
+            &quot;source&quot;: {
+                &quot;line&quot;: 734,
+                &quot;path&quot;: &quot;modules/gamemode-core/src/init.luau&quot;
+            }
+        },
+        {
+            &quot;name&quot;: &quot;Start&quot;,
+            &quot;desc&quot;: &quot;Starts the gamemode. Transitions `Active` to `true`, resets `Elapsed`\nto `0`, begins the Heartbeat loop, ticks all mounted functions once,\nthen fires `Started`.\n\nDoes nothing if already active.&quot;,
+            &quot;params&quot;: [
+                {
+                    &quot;name&quot;: &quot;metadata&quot;,
+                    &quot;desc&quot;: &quot;Optional value forwarded to `Started` listeners.&quot;,
+                    &quot;lua_type&quot;: &quot;any?&quot;
+                }
+            ],
+            &quot;returns&quot;: [],
+            &quot;function_type&quot;: &quot;method&quot;,
+            &quot;source&quot;: {
+                &quot;line&quot;: 766,
+                &quot;path&quot;: &quot;modules/gamemode-core/src/init.luau&quot;
+            }
+        },
+        {
+            &quot;name&quot;: &quot;Stop&quot;,
+            &quot;desc&quot;: &quot;Stops the gamemode. Disconnects the Heartbeat loop, flushes all\n`useEffect` cleanups, fires `Stopped`, then resets `Elapsed` to `0`.\n\nDoes nothing if not active.&quot;,
+            &quot;params&quot;: [
+                {
+                    &quot;name&quot;: &quot;winner&quot;,
+                    &quot;desc&quot;: &quot;Passed as the first argument to `Stopped` listeners.&quot;,
+                    &quot;lua_type&quot;: &quot;any?&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;metadata&quot;,
+                    &quot;desc&quot;: &quot;Passed as the second argument to `Stopped` listeners.&quot;,
+                    &quot;lua_type&quot;: &quot;any?&quot;
+                }
+            ],
+            &quot;returns&quot;: [],
+            &quot;function_type&quot;: &quot;method&quot;,
+            &quot;source&quot;: {
+                &quot;line&quot;: 809,
+                &quot;path&quot;: &quot;modules/gamemode-core/src/init.luau&quot;
+            }
+        },
+        {
+            &quot;name&quot;: &quot;Pause&quot;,
+            &quot;desc&quot;: &quot;Pauses the gamemode, suspending the tick loop and mount calls.\nFires `OnPaused`. Does nothing if not active or already paused.&quot;,
+            &quot;params&quot;: [
+                {
+                    &quot;name&quot;: &quot;metadata&quot;,
+                    &quot;desc&quot;: &quot;Optional value forwarded to `OnPaused` listeners.&quot;,
+                    &quot;lua_type&quot;: &quot;any?&quot;
+                }
+            ],
+            &quot;returns&quot;: [],
+            &quot;function_type&quot;: &quot;method&quot;,
+            &quot;source&quot;: {
+                &quot;line&quot;: 838,
+                &quot;path&quot;: &quot;modules/gamemode-core/src/init.luau&quot;
+            }
+        },
+        {
+            &quot;name&quot;: &quot;Resume&quot;,
+            &quot;desc&quot;: &quot;Resumes a paused gamemode. Does nothing if not active or not paused.&quot;,
+            &quot;params&quot;: [],
+            &quot;returns&quot;: [],
+            &quot;function_type&quot;: &quot;method&quot;,
+            &quot;source&quot;: {
+                &quot;line&quot;: 851,
+                &quot;path&quot;: &quot;modules/gamemode-core/src/init.luau&quot;
+            }
+        },
+        {
+            &quot;name&quot;: &quot;Destroy&quot;,
+            &quot;desc&quot;: &quot;Destroys the gamemode. Fires `Destroying`, stops the round if active,\ndestroys all mounts and signals, and removes the instance from the\nglobal registry.\n\nAfter calling this, the instance must not be used again.&quot;,
+            &quot;params&quot;: [],
+            &quot;returns&quot;: [],
+            &quot;function_type&quot;: &quot;method&quot;,
+            &quot;source&quot;: {
+                &quot;line&quot;: 867,
+                &quot;path&quot;: &quot;modules/gamemode-core/src/init.luau&quot;
+            }
+        }
+    ],
+    &quot;properties&quot;: [
+        {
+            &quot;name&quot;: &quot;Started&quot;,
+            &quot;desc&quot;: &quot;Fires when the gamemode starts. Receives the optional metadata passed to `Start`.\n\t&quot;,
+            &quot;lua_type&quot;: &quot;Signal&lt;any?&gt;&quot;,
+            &quot;source&quot;: {
+                &quot;line&quot;: 662,
+                &quot;path&quot;: &quot;modules/gamemode-core/src/init.luau&quot;
+            }
+        },
+        {
+            &quot;name&quot;: &quot;Stopped&quot;,
+            &quot;desc&quot;: &quot;Fires when the gamemode stops. Receives the winner and optional metadata passed to `Stop`.\n\t&quot;,
+            &quot;lua_type&quot;: &quot;Signal&lt;any?, any?&gt;&quot;,
+            &quot;source&quot;: {
+                &quot;line&quot;: 669,
+                &quot;path&quot;: &quot;modules/gamemode-core/src/init.luau&quot;
+            }
+        },
+        {
+            &quot;name&quot;: &quot;OnPaused&quot;,
+            &quot;desc&quot;: &quot;Fires when the gamemode is paused. Receives the optional metadata passed to `Pause`.\n\t&quot;,
+            &quot;lua_type&quot;: &quot;Signal&lt;any?&gt;&quot;,
+            &quot;source&quot;: {
+                &quot;line&quot;: 676,
+                &quot;path&quot;: &quot;modules/gamemode-core/src/init.luau&quot;
+            }
+        },
+        {
+            &quot;name&quot;: &quot;ElapsedChanged&quot;,
+            &quot;desc&quot;: &quot;Fires every Heartbeat while the gamemode is active and unpaused, with the current elapsed time.\n\t&quot;,
+            &quot;lua_type&quot;: &quot;Signal&lt;number&gt;&quot;,
+            &quot;source&quot;: {
+                &quot;line&quot;: 683,
+                &quot;path&quot;: &quot;modules/gamemode-core/src/init.luau&quot;
+            }
+        },
+        {
+            &quot;name&quot;: &quot;Destroying&quot;,
+            &quot;desc&quot;: &quot;Fires just before the gamemode is destroyed.\n\t&quot;,
+            &quot;lua_type&quot;: &quot;Signal&lt;GamemodeCore&gt;&quot;,
+            &quot;source&quot;: {
+                &quot;line&quot;: 690,
+                &quot;path&quot;: &quot;modules/gamemode-core/src/init.luau&quot;
+            }
+        }
+    ],
+    &quot;types&quot;: [
+        {
+            &quot;name&quot;: &quot;Config&quot;,
+            &quot;desc&quot;: &quot;A free-form config table passed to `GamemodeCore.new`. Every key is\ncopied directly onto the instance.&quot;,
+            &quot;lua_type&quot;: &quot;{ [string]: any }&quot;,
+            &quot;source&quot;: {
+                &quot;line&quot;: 561,
+                &quot;path&quot;: &quot;modules/gamemode-core/src/init.luau&quot;
+            }
+        }
+    ],
+    &quot;name&quot;: &quot;GamemodeCore&quot;,
+    &quot;desc&quot;: &quot;Reactive hook-based gamemode lifecycle core.\n\nRegister a gamemode type with `GamemodeCore.register`, then create\ninstances with `GamemodeCore.new`. Each instance manages an Active/Paused\nstate machine, a per-frame tick loop, and a React-style hook system via\n`mount`.\n\n```lua\nlocal GamemodeCore = require(Packages.GamemodeCore)\n\nGamemodeCore.register(\&quot;MyMode\&quot;, function(self, dt)\n    -- custom per-frame logic\nend)\n\nlocal gm = GamemodeCore.new(\&quot;MyMode\&quot;, \&quot;RoundOne\&quot;, {\n    ScoreLimit = 100,\n})\n\ngm.Stopped:Connect(function(winner, metadata)\n    print(\&quot;Winner:\&quot;, winner)\nend)\n\ngm:Start()\n```&quot;,
+    &quot;source&quot;: {
+        &quot;line&quot;: 553,
+        &quot;path&quot;: &quot;modules/gamemode-core/src/init.luau&quot;
+    }
+}</pre></details></div><div class="col col--3"><div class="tableOfContents_bqdL thin-scrollbar"><ul class="table-of-contents table-of-contents__left-border"><li><a href="#types" class="table-of-contents__link toc-highlight">Types</a><ul><li><a href="#Config" class="table-of-contents__link toc-highlight">Config</a></li></ul></li><li><a href="#properties" class="table-of-contents__link toc-highlight">Properties</a><ul><li><a href="#Destroying" class="table-of-contents__link toc-highlight">Destroying</a></li><li><a href="#ElapsedChanged" class="table-of-contents__link toc-highlight">ElapsedChanged</a></li><li><a href="#OnPaused" class="table-of-contents__link toc-highlight">OnPaused</a></li><li><a href="#Started" class="table-of-contents__link toc-highlight">Started</a></li><li><a href="#Stopped" class="table-of-contents__link toc-highlight">Stopped</a></li></ul></li><li><a href="#functions" class="table-of-contents__link toc-highlight">Functions</a><ul><li><a href="#Destroy" class="table-of-contents__link toc-highlight">:Destroy</a></li><li><a href="#mount" class="table-of-contents__link toc-highlight">:mount</a></li><li><a href="#Pause" class="table-of-contents__link toc-highlight">:Pause</a></li><li><a href="#Resume" class="table-of-contents__link toc-highlight">:Resume</a></li><li><a href="#Start" class="table-of-contents__link toc-highlight">:Start</a></li><li><a href="#Stop" class="table-of-contents__link toc-highlight">:Stop</a></li><li><a href="#getByName" class="table-of-contents__link toc-highlight">.getByName</a></li><li><a href="#new" class="table-of-contents__link toc-highlight">.new</a></li><li><a href="#register" class="table-of-contents__link toc-highlight">.register</a></li></ul></li></ul></div></div></div></div></main></div></div><footer class="footer footer--dark"><div class="container container-fluid"><div class="footer__bottom text--center"><div class="footer__copyright">Copyright © 2026 codjo3. Built with Moonwave and Docusaurus.</div></div></div></footer></div>
+</body>
+</html>
