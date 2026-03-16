@@ -128,7 +128,6 @@ jobs:
           PREV_TAG=$(git tag --list "$MODULE@*" --sort=-version:refname | head -1)
 
           if [ -z "$PREV_TAG" ]; then
-            # No previous tag — include all commits touching this module
             CHANGELOG=$(git log --pretty=format:"- %s (%h)" -- "modules/$MODULE/")
           else
             CHANGELOG=$(git log "$PREV_TAG"..HEAD --pretty=format:"- %s (%h)" -- "modules/$MODULE/")
@@ -138,7 +137,6 @@ jobs:
             CHANGELOG="- No changes recorded."
           fi
 
-          # Write to file to safely pass multiline content
           echo "$CHANGELOG" > /tmp/changelog.txt
           echo "tag=$TAG" >> $GITHUB_OUTPUT
 
@@ -154,8 +152,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   # ── Job 4: Deploy docs ──────────────────────────────────────
-  # Runs independently on every push to main — does not depend on
-  # test so it is never skipped when no modules changed.
   docs:
     name: Deploy docs
     runs-on: ubuntu-latest
@@ -169,6 +165,11 @@ jobs:
 
       - name: Install Moonwave
         run: npm i -g moonwave
+
+      - name: Configure git identity for moonwave
+        run: |
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
 
       - name: Deploy to GitHub Pages
         run: bash scripts/docs.sh build
