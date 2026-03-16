@@ -1,0 +1,16 @@
+[moonwave]
+title = "roblox-gamemodes"
+gitRepoUrl = "https://github.com/codjo3/roblox-gamemodes"
+
+code = [
+    "modules/gamemode-core/src",
+    "modules/gamemode-terminal/src",
+]
+
+classOrder = [
+    { section = "gamemode-core", classes = ["GamemodeCore", "HookContext", "Signal"] },
+    { section = "gamemode-terminal", classes = ["Terminal"] },
+]
+
+[moonwave.docusaurus]
+docs = { path = "docs" }

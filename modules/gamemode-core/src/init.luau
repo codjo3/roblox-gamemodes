@@ -6,6 +6,20 @@ local RunService = game:GetService("RunService")
 ------------------------------------------------------------------------
 -- Signal
 
+--[=[
+	A simple typed signal implementation used throughout gamemode-core.
+
+	@class Signal
+]=]
+
+--[=[
+	A live connection returned by `Signal:Connect`.
+
+	@interface Connection
+	.Connected boolean -- Whether the connection is still active.
+	.Disconnect (self: Connection) -> () -- Disconnects and deactivates this connection.
+	@within Signal
+]=]
 export type Connection = {
 	Connected: boolean,
 	Disconnect: (self: Connection) -> (),
@@ -24,10 +38,36 @@ export type Signal<T...> = {
 local Signal = {}
 Signal.__index = Signal
 
+--[=[
+	Creates a new Signal.
+
+	```lua
+	local signal = Signal.new()
+	```
+
+	@within Signal
+	@return Signal<T...>
+]=]
 function Signal.new<T...>(): Signal<T...>
 	return setmetatable({ _id = 0, _cns = {} }, Signal) :: any
 end
 
+--[=[
+	Connects a callback to this signal. Returns a `Connection` that can be
+	used to disconnect later.
+
+	```lua
+	local c = signal:Connect(function(value)
+	    print(value)
+	end)
+	-- later:
+	c:Disconnect()
+	```
+
+	@within Signal
+	@param fn (T...) -> () -- Callback to invoke when the signal fires.
+	@return Connection
+]=]
 function Signal:Connect(fn: (...any) -> ()): Connection
 	local id: number = (self._id :: number) + 1
 	self._id = id
@@ -40,6 +80,12 @@ function Signal:Connect(fn: (...any) -> ()): Connection
 	return c
 end
 
+--[=[
+	Fires the signal, calling all connected callbacks with the provided arguments.
+
+	@within Signal
+	@param ... T... -- Arguments forwarded to all connected callbacks.
+]=]
 function Signal:Fire(...: any)
 	local snap = table.clone(self._cns)
 	for _, fn: any in snap do
@@ -47,6 +93,13 @@ function Signal:Fire(...: any)
 	end
 end
 
+--[=[
+	Connects a callback that automatically disconnects after firing once.
+
+	@within Signal
+	@param fn (T...) -> () -- Callback to invoke once.
+	@return Connection
+]=]
 function Signal:Once(fn: (...any) -> ()): Connection
 	local c: Connection
 	c = self:Connect(function(...)
@@ -56,6 +109,17 @@ function Signal:Once(fn: (...any) -> ()): Connection
 	return c
 end
 
+--[=[
+	Yields the current thread until the signal fires, then returns the fired arguments.
+
+	```lua
+	local winner = gm.Stopped:Wait()
+	```
+
+	@within Signal
+	@yields
+	@return T...
+]=]
 function Signal:Wait(): ...any
 	local t = coroutine.running()
 	local c: Connection
@@ -66,6 +130,11 @@ function Signal:Wait(): ...any
 	return coroutine.yield()
 end
 
+--[=[
+	Disconnects all connections and makes the signal inert.
+
+	@within Signal
+]=]
 function Signal:Destroy()
 	self._cns = {}
 end
@@ -124,6 +193,16 @@ end
 ------------------------------------------------------------------------
 -- HookContext
 
+--[=[
+	Provides React-style hooks to functions mounted onto a `GamemodeCore`
+	instance via `GamemodeCore:mount`. A new `HookContext` is created per
+	mounted function and persists for the lifetime of that mount.
+
+	Hooks must always be called in the same order on every invocation —
+	the same rules as React hooks apply.
+
+	@class HookContext
+]=]
 export type HookContext = {
 	_resetCounters: (self: HookContext) -> (),
 
@@ -162,6 +241,23 @@ function HookContext:_resetCounters()
 	self._ei = 0
 end
 
+--[=[
+	Returns the current value of a persistent state slot and a `Dep` that
+	can be called to update it. On subsequent calls the initial value is
+	ignored and the stored value is returned.
+
+	```lua
+	gm:mount(function(self, ctx)
+	    local score, setScore = ctx:useState(0)
+	    -- call setScore(n) to update
+	end)
+	```
+
+	@within HookContext
+	@param initial T -- Value used only on the first call.
+	@return T -- Current value.
+	@return Dep<T> -- Callable setter. Also has a `:Connect` method to observe changes.
+]=]
 function HookContext:useState(initial: any): (any, any)
 	local idx: number = self._si + 1
 	self._si = idx
@@ -175,6 +271,28 @@ function HookContext:useState(initial: any): (any, any)
 	return slot._value, dep
 end
 
+--[=[
+	Like `useState` but the setter accepts an action that is passed through
+	a reducer function to produce the next state.
+
+	```lua
+	local function reducer(state, action)
+	    if action == "increment" then return state + 1 end
+	    return state
+	end
+
+	gm:mount(function(self, ctx)
+	    local count, dispatch = ctx:useReducer(reducer, 0)
+	    dispatch("increment")
+	end)
+	```
+
+	@within HookContext
+	@param reducer (state: T, action: A) -> T -- Pure function that computes the next state.
+	@param initial T -- Initial state value.
+	@return T -- Current state.
+	@return Dep<A> -- Callable dispatcher.
+]=]
 function HookContext:useReducer(reducer: any, initial: any): (any, any)
 	local idx: number = self._si + 1
 	self._si = idx
@@ -188,6 +306,23 @@ function HookContext:useReducer(reducer: any, initial: any): (any, any)
 	return slot._value, dep
 end
 
+--[=[
+	Returns a cached value that is only recomputed when one of the `deps`
+	changes between calls.
+
+	```lua
+	gm:mount(function(self, ctx)
+	    local expensive = ctx:useMemo(function()
+	        return computeSomething(self.Score)
+	    end, { self.Score })
+	end)
+	```
+
+	@within HookContext
+	@param fn () -> T -- Function that computes the value.
+	@param deps { any } -- List of values to watch for changes.
+	@return T -- Cached computed value.
+]=]
 function HookContext:useMemo(fn: () -> any, deps: { any }): any
 	local idx: number = self._mi + 1
 	self._mi = idx
@@ -220,6 +355,15 @@ function HookContext:useMemo(fn: () -> any, deps: { any }): any
 	return m.v
 end
 
+--[=[
+	Returns a memoized function reference that only changes when one of
+	the `deps` changes. Equivalent to `useMemo(function() return fn end, deps)`.
+
+	@within HookContext
+	@param fn T -- Function to memoize.
+	@param deps { any } -- List of values to watch for changes.
+	@return T -- Stable function reference.
+]=]
 function HookContext:useCallback(fn: any, deps: { any }): any
 	return self:useMemo(function()
 		return fn
@@ -239,6 +383,21 @@ refMeta.__newindex = function(proxy: any, k: string, v: any)
 	end
 end
 
+--[=[
+	Returns a persistent mutable ref object with a `.current` field.
+	Unlike `useState`, mutating `.current` does not trigger a re-run.
+
+	```lua
+	gm:mount(function(self, ctx)
+	    local timerRef = ctx:useRef(0)
+	    timerRef.current += dt
+	end)
+	```
+
+	@within HookContext
+	@param initial T -- Initial value of `.current`.
+	@return Ref<T>
+]=]
 function HookContext:useRef(initial: any): Ref<any>
 	local idx: number = self._si + 1
 	self._si = idx
@@ -251,6 +410,26 @@ function HookContext:useRef(initial: any): Ref<any>
 	return setmetatable({ _box = box }, refMeta) :: any
 end
 
+--[=[
+	Runs a side effect when `deps` change. The effect function may return a
+	cleanup function that is called before the next run or when the mount
+	is destroyed.
+
+	```lua
+	gm:mount(function(self, ctx)
+	    ctx:useEffect(function()
+	        local c = self.Stopped:Connect(function()
+	            print("stopped")
+	        end)
+	        return function() c:Disconnect() end
+	    end, {})
+	end)
+	```
+
+	@within HookContext
+	@param fn () -> (() -> ())? -- Effect function. Return a cleanup function or nothing.
+	@param deps { any } -- Re-runs the effect when any dep changes.
+]=]
 function HookContext:useEffect(fn: () -> (() -> ())?, deps: { any })
 	local idx: number = self._ei + 1
 	self._ei = idx
@@ -343,6 +522,42 @@ end
 ------------------------------------------------------------------------
 -- GamemodeCore
 
+--[=[
+	Reactive hook-based gamemode lifecycle core.
+
+	Register a gamemode type with `GamemodeCore.register`, then create
+	instances with `GamemodeCore.new`. Each instance manages an Active/Paused
+	state machine, a per-frame tick loop, and a React-style hook system via
+	`mount`.
+
+	```lua
+	local GamemodeCore = require(Packages.GamemodeCore)
+
+	GamemodeCore.register("MyMode", function(self, dt)
+	    -- custom per-frame logic
+	end)
+
+	local gm = GamemodeCore.new("MyMode", "RoundOne", {
+	    ScoreLimit = 100,
+	})
+
+	gm.Stopped:Connect(function(winner, metadata)
+	    print("Winner:", winner)
+	end)
+
+	gm:Start()
+	```
+
+	@class GamemodeCore
+]=]
+
+--[=[
+	A free-form config table passed to `GamemodeCore.new`. Every key is
+	copied directly onto the instance.
+
+	@type Config { [string]: any }
+	@within GamemodeCore
+]=]
 export type Config = { [string]: any }
 
 export type GamemodeCore = {
@@ -377,6 +592,23 @@ local _instances: { [string]: GamemodeCore } = {}
 local GamemodeCore = {}
 GamemodeCore.__index = GamemodeCore
 
+--[=[
+	Registers a gamemode type with a tick function. Must be called before
+	`GamemodeCore.new` for that type. Registering the same type twice
+	overwrites the previous registration with a warning.
+
+	```lua
+	GamemodeCore.register("MyMode", function(self, dt)
+	    if self.Elapsed > 300 then
+	        self:Stop(nil)
+	    end
+	end)
+	```
+
+	@within GamemodeCore
+	@param gmType string -- Unique identifier for this gamemode type.
+	@param tickFn (self: GamemodeCore, dt: number) -> () -- Called every Heartbeat while active and unpaused.
+]=]
 function GamemodeCore.register(gmType: string, tickFn: (self: GamemodeCore, dt: number) -> ())
 	assert(type(gmType) == "string" and gmType ~= "", "gamemode-core: type must be a non-empty string")
 	assert(type(tickFn) == "function", "gamemode-core: tickFn must be a function")
@@ -386,6 +618,22 @@ function GamemodeCore.register(gmType: string, tickFn: (self: GamemodeCore, dt: 
 	_registry[gmType] = { tickFn = tickFn }
 end
 
+--[=[
+	Creates a new `GamemodeCore` instance of the given registered type.
+	Every key in `config` is shallow-copied onto the instance.
+
+	```lua
+	local gm = GamemodeCore.new("MyMode", "RoundOne", {
+	    ScoreLimit = 100,
+	})
+	```
+
+	@within GamemodeCore
+	@param gmType string -- A type previously registered with `GamemodeCore.register`.
+	@param name string -- Unique name for this instance. Used by `GamemodeCore.getByName`.
+	@param config Config -- Key-value pairs copied onto the instance.
+	@return GamemodeCore
+]=]
 function GamemodeCore.new(gmType: string, name: string, config: Config): GamemodeCore
 	assert(_registry[gmType], `gamemode-core: type '{gmType}' not registered`)
 	assert(not _instances[name], `gamemode-core: '{name}' already exists`)
@@ -406,20 +654,83 @@ function GamemodeCore.new(gmType: string, name: string, config: Config): Gamemod
 	self.Paused = false
 	self.Elapsed = 0
 
+	--[=[
+		Fires when the gamemode starts. Receives the optional metadata passed to `Start`.
+		@prop Started Signal<any?>
+		@within GamemodeCore
+	]=]
 	self.Started = Signal.new()
+
+	--[=[
+		Fires when the gamemode stops. Receives the winner and optional metadata passed to `Stop`.
+		@prop Stopped Signal<any?, any?>
+		@within GamemodeCore
+	]=]
 	self.Stopped = Signal.new()
+
+	--[=[
+		Fires when the gamemode is paused. Receives the optional metadata passed to `Pause`.
+		@prop OnPaused Signal<any?>
+		@within GamemodeCore
+	]=]
 	self.OnPaused = Signal.new()
+
+	--[=[
+		Fires every Heartbeat while the gamemode is active and unpaused, with the current elapsed time.
+		@prop ElapsedChanged Signal<number>
+		@within GamemodeCore
+	]=]
 	self.ElapsedChanged = Signal.new()
+
+	--[=[
+		Fires just before the gamemode is destroyed.
+		@prop Destroying Signal<GamemodeCore>
+		@within GamemodeCore
+	]=]
 	self.Destroying = Signal.new()
 
 	_instances[name] = self
 	return self
 end
 
+--[=[
+	Returns the `GamemodeCore` instance registered under `name`, or `nil`
+	if no such instance exists.
+
+	@within GamemodeCore
+	@param name string
+	@return GamemodeCore?
+]=]
 function GamemodeCore.getByName(name: string): GamemodeCore?
 	return _instances[name]
 end
 
+--[=[
+	Attaches a reactive function to the gamemode. The function receives the
+	instance and a `HookContext` and is called every Heartbeat while the
+	gamemode is active and unpaused.
+
+	Returns an unmount function. Call it to detach the mount and run any
+	pending `useEffect` cleanups.
+
+	```lua
+	local unmount = gm:mount(function(self, ctx)
+	    local score, setScore = ctx:useState(0)
+
+	    ctx:useEffect(function()
+	        local c = self.Stopped:Connect(function() setScore(0) end)
+	        return function() c:Disconnect() end
+	    end, {})
+	end)
+
+	-- later:
+	unmount()
+	```
+
+	@within GamemodeCore
+	@param fn (gm: GamemodeCore, ctx: HookContext) -> () -- Reactive function to mount.
+	@return () -> () -- Call to unmount and clean up.
+]=]
 function GamemodeCore:mount(fn: (gm: GamemodeCore, ctx: HookContext) -> ()): () -> ()
 	local gm: any = self
 	local entry = makeMountEntry(gm, fn)
@@ -442,6 +753,16 @@ function GamemodeCore:mount(fn: (gm: GamemodeCore, ctx: HookContext) -> ()): () 
 	end
 end
 
+--[=[
+	Starts the gamemode. Transitions `Active` to `true`, resets `Elapsed`
+	to `0`, begins the Heartbeat loop, ticks all mounted functions once,
+	then fires `Started`.
+
+	Does nothing if already active.
+
+	@within GamemodeCore
+	@param metadata any? -- Optional value forwarded to `Started` listeners.
+]=]
 function GamemodeCore:Start(metadata: any?)
 	local gm: any = self
 	if gm.Active then
@@ -475,6 +796,16 @@ function GamemodeCore:Start(metadata: any?)
 	gm.Started:Fire(metadata)
 end
 
+--[=[
+	Stops the gamemode. Disconnects the Heartbeat loop, flushes all
+	`useEffect` cleanups, fires `Stopped`, then resets `Elapsed` to `0`.
+
+	Does nothing if not active.
+
+	@within GamemodeCore
+	@param winner any? -- Passed as the first argument to `Stopped` listeners.
+	@param metadata any? -- Passed as the second argument to `Stopped` listeners.
+]=]
 function GamemodeCore:Stop(winner: any?, metadata: any?)
 	local gm: any = self
 	if not gm.Active then
@@ -497,6 +828,13 @@ function GamemodeCore:Stop(winner: any?, metadata: any?)
 	gm.Elapsed = 0
 end
 
+--[=[
+	Pauses the gamemode, suspending the tick loop and mount calls.
+	Fires `OnPaused`. Does nothing if not active or already paused.
+
+	@within GamemodeCore
+	@param metadata any? -- Optional value forwarded to `OnPaused` listeners.
+]=]
 function GamemodeCore:Pause(metadata: any?)
 	local gm: any = self
 	if gm.Active and not gm.Paused then
@@ -505,6 +843,11 @@ function GamemodeCore:Pause(metadata: any?)
 	end
 end
 
+--[=[
+	Resumes a paused gamemode. Does nothing if not active or not paused.
+
+	@within GamemodeCore
+]=]
 function GamemodeCore:Resume()
 	local gm: any = self
 	if gm.Active and gm.Paused then
@@ -512,6 +855,15 @@ function GamemodeCore:Resume()
 	end
 end
 
+--[=[
+	Destroys the gamemode. Fires `Destroying`, stops the round if active,
+	destroys all mounts and signals, and removes the instance from the
+	global registry.
+
+	After calling this, the instance must not be used again.
+
+	@within GamemodeCore
+]=]
 function GamemodeCore:Destroy()
 	local gm: any = self
 	gm.Destroying:Fire(gm)

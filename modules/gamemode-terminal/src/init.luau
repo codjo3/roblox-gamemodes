@@ -11,6 +11,16 @@ local Observer = QuickZone.Observer
 ------------------------------------------------------------------------
 -- Types
 
+--[=[
+	Per-team state tracked each round.
+
+	@interface TeamInfo
+	.Points number -- Accumulated score toward `PointsNeeded`.
+	.Capturing number -- Current capture progress from `0` to `CaptureTime`.
+	.inZoneCount number -- Number of eligible players currently in the zone.
+	.isHolder boolean -- Whether this team is currently a holder.
+	@within Terminal
+]=]
 export type TeamInfo = {
 	Points: number,
 	Capturing: number,
@@ -18,6 +28,28 @@ export type TeamInfo = {
 	isHolder: boolean,
 }
 
+--[=[
+	Configuration passed to `Terminal.new`.
+
+	@interface Settings
+	.Teams { Team } -- Teams competing in the round. Required.
+	.Parts { BasePart } -- Parts that define the capture zone. Required.
+	.Increase number? -- Points per second earned while holding. Defaults to `1`.
+	.Rollback number? -- Points per second lost while not holding. Defaults to `1`.
+	.PointsNeeded number? -- Points required to win. Defaults to `1200`.
+	.RequireDominanceToIncrease boolean? -- Only earn points when opponent has zero. Defaults to `true`.
+	.ProgressWhileContested boolean? -- Allow capture progress when both teams are present. Defaults to `true`.
+	.CaptureWhileDead boolean? -- Count dead players toward zone occupation. Defaults to `false`.
+	.CaptureStacking boolean? -- Scale capture speed by player count difference. Defaults to `false`.
+	.CaptureTime number? -- Seconds to fully capture the point. Defaults to `1`.
+	.OvertimeThreshold number? -- Elapsed seconds before overtime begins. `-1` disables. Defaults to `-1`.
+	.OvertimeIncrease number? -- Points per second during overtime. Defaults to `1`.
+	.OvertimeRollback number? -- Rollback rate during overtime. Defaults to `1`.
+	.OvertimePointsNeeded number? -- Points to win during overtime. Defaults to `120`.
+	.OvertimeDefenderWinFullDominance boolean? -- Defenders win if fully captured while opponent has zero. Defaults to `true`.
+	.DefendingTeam Team? -- The defending team for overtime. Defaults to `Teams[1]`.
+	@within Terminal
+]=]
 export type Settings = {
 	Teams: { Team },
 	Parts: { BasePart },
@@ -340,9 +372,44 @@ end
 ------------------------------------------------------------------------
 -- Terminal
 
+--[=[
+	A terminal (control-point capture) gamemode built on `GamemodeCore`.
+
+	Teams compete to hold a `BasePart` zone long enough to accumulate
+	points. The first team to reach `PointsNeeded` wins. Supports
+	overtime, stacking capture speed, defender win conditions, and
+	React-style hooks via the inherited `mount` API.
+
+	```lua
+	local Terminal = require(Packages.GamemodeTerminal)
+
+	local gm = Terminal.new("RoundOne", {
+	    Teams = { game.Teams.Red, game.Teams.Blue },
+	    Parts = { workspace.ControlPoint },
+	    PointsNeeded = 1200,
+	    CaptureTime = 10,
+	})
+
+	gm.Stopped:Connect(function(winner)
+	    print(winner.Name .. " wins!")
+	end)
+
+	gm:Start()
+	```
+
+	@class Terminal
+]=]
 local Terminal = {}
 Terminal.__index = Terminal
 
+--[=[
+	Creates a new Terminal gamemode instance.
+
+	@within Terminal
+	@param name string -- Unique name for this instance.
+	@param settings Settings -- Round configuration. `Teams` and `Parts` are required.
+	@return Terminal
+]=]
 function Terminal.new(name: string, settings: Settings)
 	assert(settings.Teams and settings.Teams[1], "Terminal: Teams must have at least 1 entry")
 	assert(settings.Parts and settings.Parts[1], "Terminal: Parts must have at least 1 entry")
@@ -392,7 +459,6 @@ function Terminal.new(name: string, settings: Settings)
 	gm._qzGroup = nil
 	gm._qzObs = nil
 
-	-- Terminal signals (private Signal implementation to avoid a second module dep)
 	local Signal = {}
 	Signal.__index = Signal
 	function Signal.new()
@@ -419,11 +485,46 @@ function Terminal.new(name: string, settings: Settings)
 		self._cns = {}
 	end
 
+	--[=[
+		Fires when the zone transitions between contested and uncontested.
+		@prop ContestedChanged Signal<boolean>
+		@within Terminal
+	]=]
 	gm.ContestedChanged = Signal.new()
+
+	--[=[
+		Fires when the round transitions into overtime.
+		@prop OvertimeEntered Signal<>
+		@within Terminal
+	]=]
 	gm.OvertimeEntered = Signal.new()
+
+	--[=[
+		Fires whenever a team's points value changes.
+		@prop PointsChanged Signal<Team, number>
+		@within Terminal
+	]=]
 	gm.PointsChanged = Signal.new()
+
+	--[=[
+		Fires whenever a team's capture progress changes.
+		@prop CapturingChanged Signal<Team, number>
+		@within Terminal
+	]=]
 	gm.CapturingChanged = Signal.new()
+
+	--[=[
+		Fires when a team becomes a holder (reaches full capture).
+		@prop HolderAdded Signal<Team>
+		@within Terminal
+	]=]
 	gm.HolderAdded = Signal.new()
+
+	--[=[
+		Fires when a team loses holder status.
+		@prop HolderRemoved Signal<Team>
+		@within Terminal
+	]=]
 	gm.HolderRemoved = Signal.new()
 
 	return setmetatable(gm, Terminal)
@@ -432,6 +533,13 @@ end
 ------------------------------------------------------------------------
 -- Lifecycle
 
+--[=[
+	Starts the round. Resets all per-team state, sets up QuickZone
+	detection, then calls `GamemodeCore:Start`.
+
+	@within Terminal
+	@param metadata any? -- Forwarded to `Started` listeners.
+]=]
 function Terminal:Start(metadata: any?)
 	self.Overtime = false
 	self.Contested = false
@@ -454,6 +562,14 @@ function Terminal:Start(metadata: any?)
 	GamemodeCore.Start(self, metadata)
 end
 
+--[=[
+	Stops the round, tears down QuickZone, fires `Stopped`, then clears
+	all per-team state.
+
+	@within Terminal
+	@param winner Team? -- The winning team, or `nil` for a draw.
+	@param metadata any? -- Forwarded to `Stopped` listeners.
+]=]
 function Terminal:Stop(winner: Team?, metadata: any?)
 	teardownZone(self)
 	GamemodeCore.Stop(self, winner, metadata)
@@ -464,6 +580,12 @@ function Terminal:Stop(winner: Team?, metadata: any?)
 	self.Contested = false
 end
 
+--[=[
+	Destroys the Terminal instance. Cleans up all Terminal signals then
+	calls `GamemodeCore:Destroy`.
+
+	@within Terminal
+]=]
 function Terminal:Destroy()
 	self.ContestedChanged:Destroy()
 	self.OvertimeEntered:Destroy()
@@ -478,10 +600,30 @@ end
 Terminal.Pause = GamemodeCore.Pause
 Terminal.Resume = GamemodeCore.Resume
 
+--[=[
+	Attaches a reactive function to this Terminal instance.
+	Delegates to `GamemodeCore:mount`.
+
+	@within Terminal
+	@param fn (gm: Terminal, ctx: HookContext) -> ()
+	@return () -> ()
+]=]
 function Terminal:mount(fn)
 	return GamemodeCore.mount(self, fn)
 end
 
+--[=[
+	Returns a frozen snapshot of the current round state. Useful for
+	replicating to clients or reading state outside of a mount.
+
+	```lua
+	local state = gm:getState()
+	print(state.Active, state.Overtime, state.Elapsed)
+	```
+
+	@within Terminal
+	@return { Active: boolean, Paused: boolean, Overtime: boolean, Contested: boolean, Elapsed: number, PlayingTeams: { [Team]: TeamInfo }, Holders: { Team }, PointsNeeded: number, CaptureTime: number, Increase: number, Rollback: number }
+]=]
 function Terminal:getState()
 	return table.freeze({
 		Active = self.Active,
