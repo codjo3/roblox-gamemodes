@@ -92,9 +92,7 @@ jobs:
         shell: bash
         env:
           WALLY_AUTH_TOKEN: ${{ secrets.WALLY_AUTH_TOKEN }}
-        run: |
-          wally login --token "$WALLY_AUTH_TOKEN"
-          scripts/publish.sh ${{ matrix.module }}
+        run: scripts/publish.sh ${{ matrix.module }}
 
       - name: Generate changelog
         if: steps.version_check.outputs.should_publish == 'true'

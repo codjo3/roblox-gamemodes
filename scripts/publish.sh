@@ -128,8 +128,6 @@ fi
 echo "    ✓ All aliases resolved"
 
 # ── 8. Replace src/ with dist/src/ ───────────────────────────
-# dist/src is the processed output — make it the canonical src
-# so wally.toml and default.project.json need no changes.
 rm -rf src
 mv dist/src src
 rm -rf dist
@@ -147,6 +145,10 @@ if [ "$DRY_RUN" = true ]; then
     [ -n "$INIT_FILE" ] && grep 'require(' "$INIT_FILE" | head -20
 else
     echo "--- [Wally] Publishing $PACKAGE_NAME@$VERSION ---"
+    # Login runs here, inside BUILD_PATH where wally.toml exists
+    if [ -n "$WALLY_AUTH_TOKEN" ]; then
+        wally login --token "$WALLY_AUTH_TOKEN"
+    fi
     wally publish
     echo "✓ Published $PACKAGE_NAME@$VERSION"
 fi
