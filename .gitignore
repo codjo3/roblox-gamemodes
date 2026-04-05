@@ -7,9 +7,12 @@ wally.lock
 *.rbxl
 *.rbxlx
 *sourcemap.json
+*project.json
 
 # Build output
 build/
+dist/
+*.d.lua
 
 # OS
 .DS_Store

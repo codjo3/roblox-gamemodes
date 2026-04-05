@@ -6,3 +6,4 @@ wally = { github = "UpliftGames/wally", version = "0.3.2" }
 wally-package-types = { github = "JohnnyMorganz/wally-package-types", version = "1.6.2" }
 
 darklua = { github = "seaofvoices/darklua", version = "0.18.0" }
+luau-lsp = { github = "JohnnyMorganz/luau-lsp", version = "1.64.0" }

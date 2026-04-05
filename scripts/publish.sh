@@ -3,13 +3,14 @@ set -e
 
 # ============================================================
 # scripts/publish.sh
-# Processes src/ through darklua (resolving @pkg aliases to
-# script.Parent chains) then publishes to Wally.
+# Builds a module via build.sh (darklua pipeline), checks
+# whether the version in wally.toml has been bumped since the
+# last git tag, and publishes to Wally if so.
 #
 # Usage:
-#   scripts/publish.sh                  (interactive selection)
+#   scripts/publish.sh                  (interactive)
 #   scripts/publish.sh gamemode-core    (direct)
-#   scripts/publish.sh --dry-run        (build only, no publish)
+#   scripts/publish.sh --dry-run        (build + verify, no publish)
 # ============================================================
 
 DRY_RUN=false
@@ -40,8 +41,11 @@ else
     done
 fi
 
-VERSION=$(grep '^version' "$MODULE_DIR/wally.toml" | head -1 | sed 's/version = "\(.*\)"/\1/')
-PACKAGE_NAME=$(grep '^name' "$MODULE_DIR/wally.toml" | head -1 | sed 's/name = "\(.*\)"/\1/')
+REPO_ROOT="$(pwd)"
+TOML="$MODULE_DIR/wally.toml"
+
+VERSION=$(grep '^version' "$TOML" | head -1 | sed 's/version = "\(.*\)"/\1/')
+PACKAGE_NAME=$(grep '^name' "$TOML" | head -1 | sed 's/name = "\(.*\)"/\1/')
 
 echo ""
 echo "══════════════════════════════════════════════"
@@ -49,108 +53,93 @@ echo "  $PACKAGE_NAME@$VERSION"
 [ "$DRY_RUN" = true ] && echo "  (dry run)"
 echo "══════════════════════════════════════════════"
 
-# ── 2. Set up a clean build directory ───────────────────────
-BUILD_PATH="build/publish/$MODULE_NAME"
-rm -rf "$BUILD_PATH"
-mkdir -p "$BUILD_PATH"
-cp -r "$MODULE_DIR/." "$BUILD_PATH/"
-cd "$BUILD_PATH"
+# ── 2. Version check ─────────────────────────────────────────
+# Compare the current version in wally.toml against the most
+# recent git tag for this module. If unchanged, skip publishing.
+PREV_TAG=$(git tag --list "$MODULE_NAME@*" --sort=-version:refname | head -1)
 
-# ── 3. Wally install ─────────────────────────────────────────
-echo "--- [Wally] Installing dependencies ---"
-wally install
-mkdir -p Packages
-
-# ── 4. Generate a temporary publish project ──────────────────
-cat > darklua.project.json << EOF
-{
-  "name": "${MODULE_NAME}-darklua",
-  "tree": {
-    "\$className": "DataModel",
-    "ReplicatedStorage": {
-      "\$className": "ReplicatedStorage",
-      "Packages": {
-        "\$path": "Packages",
-        "${MODULE_NAME}": {
-          "\$path": "src"
-        }
-      }
-    }
-  }
-}
-EOF
-
-echo "--- [Rojo] Generating darklua sourcemap ---"
-rojo sourcemap darklua.project.json --output darklua-sourcemap.json
-
-# ── 5. Generate a publish darklua config ─────────────────────
-cat > .darklua-publish.json << EOF
-{
-  "generator": "retain_lines",
-  "rules": [
-    {
-      "rule": "inject_global_value",
-      "identifier": "__DEV__",
-      "value": false
-    },
-    {
-      "rule": "convert_require",
-      "current": {
-        "name": "path",
-        "sources": {
-          "@pkg": "Packages",
-          "@src": "src"
-        }
-      },
-      "target": {
-        "name": "roblox",
-        "rojo_sourcemap": "./darklua-sourcemap.json",
-        "indexing_style": "wait_for_child"
-      }
-    }
-  ]
-}
-EOF
-
-# ── 6. Darklua: process src/ → dist/src/ ─────────────────────
-echo "--- [Darklua] Processing src/ → dist/src/ ---"
-mkdir -p dist/src
-darklua process --config .darklua-publish.json src dist/src
-
-# ── 7. Verify all aliases were resolved ──────────────────────
-echo "--- Verifying no path aliases remain in dist/src/ ---"
-ALIAS_HITS=$(grep -rl '@pkg\|@dev\|@src' dist/src/ --include="*.luau" --include="*.lua" 2>/dev/null || true)
-if [ -n "$ALIAS_HITS" ]; then
-    echo "❌ Unresolved path aliases found after darklua processing:"
-    echo "$ALIAS_HITS"
-    exit 1
+if [ -n "$PREV_TAG" ]; then
+    PREVIOUS=$(git show "$PREV_TAG":"$TOML" 2>/dev/null \
+        | grep '^version' | head -1 \
+        | sed 's/version = "\(.*\)"/\1/' || echo "none")
+else
+    PREVIOUS="none"
 fi
-echo "    ✓ All aliases resolved"
 
-# ── 8. Replace src/ with dist/src/ ───────────────────────────
-rm -rf src
-mv dist/src src
-rm -rf dist
-echo "--- Replaced src/ with processed output ---"
+echo "Current version:  $VERSION"
+echo "Previous version: $PREVIOUS"
 
-# ── 9. Publish ────────────────────────────────────────────────
+if [ "$VERSION" = "$PREVIOUS" ]; then
+    echo "Version unchanged — nothing to publish."
+    exit 0
+fi
+
+echo "Version bumped — proceeding."
+
+# ── 3. Build via build.sh ─────────────────────────────────────
+# Delegates sourcemap generation, darklua processing, non-Lua
+# file sync, and alias verification to build.sh. The .rbxm
+# output is discarded — we only need dist/src/ to be populated
+# before staging for Wally.
+echo "--- Running build.sh to process dist/src/ ---"
+DUMMY_RBXM="build/output/.publish-tmp-$MODULE_NAME.rbxm"
+sh scripts/build.sh "$MODULE_NAME" --output "$DUMMY_RBXM"
+rm -f "$DUMMY_RBXM"
+
+# ── 4. Stage publish directory ───────────────────────────────
+# wally.toml declares include = ["src", ...], so wally expects
+# the processed source to be at src/. We stage a clean copy with
+# dist/src/ presented as src/ so the working module dir stays clean.
+STAGE="$REPO_ROOT/build/publish/$MODULE_NAME"
+rm -rf "$STAGE"
+mkdir -p "$STAGE"
+
+cp "$MODULE_DIR/wally.toml" "$STAGE/wally.toml"
+cp "$MODULE_DIR/default.project.json" "$STAGE/default.project.json"
+cp -r "$MODULE_DIR/dist/src/." "$STAGE/src/"
+
+echo "--- Staged publish directory: $STAGE ---"
+
+# ── 5. Publish ───────────────────────────────────────────────
 if [ "$DRY_RUN" = true ]; then
     echo ""
-    echo "Dry run complete. Processed output: $BUILD_PATH/src/"
+    echo "Dry run complete. Staged output: $STAGE"
     echo ""
     echo "Resolved requires in src/init.luau:"
     INIT_FILE=""
-    [ -f "src/init.luau" ] && INIT_FILE="src/init.luau"
-    [ -f "src/init.lua" ]  && INIT_FILE="src/init.lua"
+    [ -f "$STAGE/src/init.luau" ] && INIT_FILE="$STAGE/src/init.luau"
+    [ -f "$STAGE/src/init.lua"  ] && INIT_FILE="$STAGE/src/init.lua"
     [ -n "$INIT_FILE" ] && grep 'require(' "$INIT_FILE" | head -20
-else
-    echo "--- [Wally] Publishing $PACKAGE_NAME@$VERSION ---"
-    # Login runs here, inside BUILD_PATH where wally.toml exists
-    if [ -n "$WALLY_AUTH_TOKEN" ]; then
-        wally login --token "$WALLY_AUTH_TOKEN"
-    fi
-    wally publish
-    echo "✓ Published $PACKAGE_NAME@$VERSION"
+    exit 0
 fi
 
-cd - > /dev/null
+cd "$STAGE"
+
+if [ -n "$WALLY_AUTH_TOKEN" ]; then
+    echo "--- [Wally] Logging in ---"
+    wally login --token "$WALLY_AUTH_TOKEN"
+fi
+
+echo "--- [Wally] Publishing $PACKAGE_NAME@$VERSION ---"
+wally publish
+echo "✓ Published $PACKAGE_NAME@$VERSION"
+
+cd "$REPO_ROOT"
+
+# ── 6. Changelog ─────────────────────────────────────────────
+TAG="$MODULE_NAME@$VERSION"
+
+if [ -z "$PREV_TAG" ]; then
+    CHANGELOG=$(git log --pretty=format:"- %s (%h)" -- "$MODULE_DIR/")
+else
+    CHANGELOG=$(git log "$PREV_TAG"..HEAD --pretty=format:"- %s (%h)" -- "$MODULE_DIR/")
+fi
+
+[ -z "$CHANGELOG" ] && CHANGELOG="- No changes recorded."
+
+echo "$CHANGELOG" > /tmp/changelog.txt
+echo "tag=$TAG" > /tmp/publish-meta.txt
+
+echo ""
+echo "Changelog:"
+cat /tmp/changelog.txt
