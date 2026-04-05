@@ -39,7 +39,8 @@ if [ -n "$DIRECT_MODULE" ]; then
     MODULE_NAME="$DIRECT_MODULE"
 else
     echo "Select a module to build:"
-    select MODULE_DIR in modules/*; do
+    select MODULE_DIR in modules/*
+    do
         if [ -n "$MODULE_DIR" ]; then
             MODULE_NAME=$(basename "$MODULE_DIR")
             break
